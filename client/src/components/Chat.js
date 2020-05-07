@@ -1,25 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import queryString from 'query-string';
-import io from 'socket.io-client';
 
-import InfoBar from '../InfoBar/InfoBar';
-import Messages from '../Messages/Messages';
-import Input from '../Input/Input';
+import InfoBar from '../InfoBar';
+import Messages from '../Messages';
+import Input from '../Input';
 
-let socket;
-
-const Chat = () => {
+const Chat = (socket) => {
     const [name, setName] = useState('');
     const [room, setRoom] = useState('');
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
-    const ENDPOINT = 'localhost:5000';
 
     useEffect(() => {
         const { name, room } = queryString.parse(window.location.search);
 
-        socket = io(ENDPOINT);
-        
         setName(name);
         setRoom(room);
 
