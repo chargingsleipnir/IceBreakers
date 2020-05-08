@@ -6,7 +6,8 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-const { AddUser, UploadImage, RemoveUser, GetUser, GetUsers } = require('./users.js');
+const { AddUser, RemoveUser, GetUser, GetUsers, LikeUserToggle } = require('./users.js');
+const { UploadImage } = require('./imageHdlr.js');
 
 // VARIABLES -----
 const PORT = process.env.PORT || 5000;
@@ -27,12 +28,15 @@ io.on("connection", (socket) => {
         Callback();
     });
 
-    socket.on('ImageUploadSlice', (data) => {
-        UploadImage(socket, data);
-    });
-
     socket.on('GetUsers', (data, CB) => {
         CB(GetUsers(socket.id));
+    });
+
+    socket.on('LikeUserToggle', (userID, CB) => {
+        const otherUserLiked = LikeUserToggle(socket.id, userID);
+        CB(otherUserLiked);
+
+        io.to(userID).emit("RecLikeToggle", { socketID: socket.id, likesMe: otherUserLiked });
     });
 
     // socket.on('ImageDownload', (ofSocketID) => {
@@ -53,22 +57,40 @@ io.on("connection", (socket) => {
     //     Callback();
     // });
 
-    socket.on('sendMessage', ( message, Callback ) => {
-        const user = GetUser(socket.id);
-
-        //console.log(`Sending room: "${user.room}" received msg: "${message}"`);
-        io.to(user.room).emit('message', { user: user.name, text: message });
-        io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
-        Callback();
+    socket.on('ImageUploadSlice', (data) => {
+        UploadImage(socket.id, data, (slice) => {
+            if(slice === -1)
+                socket.emit('ImageUploadError');
+            else if(slice === 0)
+                socket.emit('ImageUploadEnd'); 
+            else
+                socket.emit('ImageReqSlice', { currentSlice: slice });
+        });        
     });
+
+    // socket.on('sendMessage', ( message, Callback ) => {
+    //     const user = GetUser(socket.id);
+
+    //     //console.log(`Sending room: "${user.room}" received msg: "${message}"`);
+    //     io.to(user.room).emit('message', { user: user.name, text: message });
+    //     io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
+    //     Callback();
+    // });
 
     socket.on("disconnect", () => {
         console.log(`Socket connection removed: ${socket.id}`);
-        const user = RemoveUser(io, socket);
+        const chatPtnrID = RemoveUser(socket.id);
 
-        if(user) {
-            io.to(user.room).emit('message', { user: 'admin', text: `${user.name} has left.` })
-        }
+        // End chat window of another user if engaged with this one.
+        if(chatPtnrID !== -1)
+            io.to(chatPtnrID).emit("EndChat");
+
+        // Have everyone remove this user from their lists.
+        socket.broadcast.emit("RemoveUser", socket.id);
+
+        // if(user) {
+        //     io.to(user.room).emit('message', { user: 'admin', text: `${user.name} has left.` })
+        // }
     });
 });
 

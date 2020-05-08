@@ -11,7 +11,6 @@ class Users extends Component {
 
         props.socket.on("RecNewUser", (user) => {
             console.log(`Adding user: "${user.id}"`);
-            console.log(`User image src: "${user.imgSrc}"`);
             this.setState({ users: [...this.state.users, user] });
         });
         props.socket.on("RemoveUser", (userID) => {
@@ -20,11 +19,20 @@ class Users extends Component {
             this.state.users.splice(removeIndex, 1);
             this.setState({ users: this.state.users });
         });
+        props.socket.on("RecLikeToggle", (userData) => {
+            console.log(`Liked by user: "${userData.socketID}"`);
+            let changeIndex = this.state.users.findIndex((user) => user.id === userData.socketID);
+            this.state.users[changeIndex].likesMe = userData.likesMe;
+            this.setState({ users: this.state.users });
+
+            // TODO: I can also check if I'm in conversation with the other user and shut if down if need be.
+            //* The conversation doesn't necessarily need to be forcibly shut down at this point? Maybe just some other way of indicating the unmatch has taken place.
+        });
 
         props.socket.emit("GetUsers", {}, (users) => {
             for(let i = 0; i < users.length; i++) {
                 console.log(`Adding users: "${users[i].id}"`);
-                console.log(`User image src: "${users[i].imgSrc}"`);
+                //console.log(`User image src: "${users[i].imgSrc}"`);
             }
 
             this.setState({ users });
@@ -40,8 +48,8 @@ class Users extends Component {
                     <ScrollToBottom className="users">
                         { 
                             this.state.users.map((user, i) => 
-                                <li key={i} data-socketid={user.id}>
-                                    <User user={user} GoToPage={this.props.GoToPage} />
+                                <li key={i} >
+                                    <User socket={this.props.socket} user={user} GoToPage={this.props.GoToPage} />
                                 </li>
                             )
                         }

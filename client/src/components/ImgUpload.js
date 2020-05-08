@@ -7,7 +7,7 @@ let URL = window.URL || window.webkitURL;
 const extArr = ['jpg', 'jpeg', 'png', 'gif'];
 
 const ImgUpload = ({ GetImgDetails, disabled }) => {
-    const [src, setSrc] = useState(defaultImg);
+    const [src, SetSrc] = useState(defaultImg);
 
     const imgChange = (event) => {
         // Make sure only 1 file has been uploaded
@@ -31,7 +31,7 @@ const ImgUpload = ({ GetImgDetails, disabled }) => {
         var img = new Image();
         img.onload = () => { console.log("img width: " + img.width + ", height: " + img.height); };
         img.src = URL.createObjectURL(file);
-        setSrc(img.src);
+        SetSrc(img.src);
 
         // Set global user image source.
         Gbl.user.imgSrc = img.src;

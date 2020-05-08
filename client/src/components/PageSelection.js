@@ -20,7 +20,7 @@ const PageSelection = () => {
         return ( <Users socket={socket} GoToPage={GoToPage} /> );
     }
     else if(page === pages.CHAT) {
-        
+        // TODO: Start chat page
     }
 };
 

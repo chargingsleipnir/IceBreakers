@@ -1,12 +1,6 @@
-var fs = require('fs');
+const { GetImage, RemoveImage } = require('./imageHdlr.js');
 
 const users = [];
-
-// Container for any/all images being uploaded at one time.
-var uploads = {};
-const PATH = __dirname + "\\AvatarUploadSpace\\";
-const SLICE_SIZE = 100000;
-var uploadObj = { name: null, type: null, size: 0,  data: [], slice: 0 };
 
 const AddUser = ({ id, name, ext }) => {
 
@@ -17,7 +11,7 @@ const AddUser = ({ id, name, ext }) => {
     }
 
     // Create user
-    const user = { id, name, imgExt: ext, matchReqsIn: [], matchReqsOut: [], matches: [], matchChatID: -1 };
+    const user = { id, name, imgExt: ext, matchReqsIn: [], matchReqsOut: [], matchChatID: -1 };
     users.push(user);
 
     
@@ -27,43 +21,13 @@ const AddUser = ({ id, name, ext }) => {
     }
 
     // Return user shorthand, all that's needed for the client.
-    return { id, name, imgSrc };
+    return { id, name, imgSrc, likesMe: false };
 };
 
-const UploadImage = (socket, data) => {
-    if(!uploads[socket.id]) {
-        uploads[socket.id] = Object.assign({}, uploadObj, data);
-        uploads[socket.id].data = [];
-    }
-    // Convert the ArrayBuffer to Buffer 
-    data.data = Buffer.from(new Uint8Array(data.data)); 
-    // Save the data 
-    uploads[socket.id].data.push(data.data); 
-    uploads[socket.id].slice++;
-
-    // Upload complete
-    if(uploads[socket.id].slice * SLICE_SIZE >= uploads[socket.id].size) { 
-        const fileBuffer = Buffer.concat(uploads[socket.id].data);
-        const fileName = socket.id + '.' + data.ext;
-
-        // First, avatar image goes into open folder
-        fs.writeFile(PATH + fileName, fileBuffer, (error) => {
-            delete uploads[socket.id];
-            if(error)
-                return socket.emit('ImageUploadError');
-
-            socket.emit('ImageUploadEnd'); 
-        });                    
-    }
-    else { 
-        socket.emit('ImageReqSlice', { currentSlice: uploads[socket.id].slice }); 
-    }
-};
-
-const RemoveUser = (io, socket) => {
-    const index = users.findIndex((user) => user.id === socket.id);
+const RemoveUser = (socketID) => {
+    const index = users.findIndex((user) => user.id === socketID);
     if(index === -1) {
-        console.log(`Could not find (to remove) user id: ${socket.id}`);
+        console.log(`Could not find (to remove) user id: ${socketID}`);
         return;
     }
 
@@ -71,15 +35,12 @@ const RemoveUser = (io, socket) => {
     const user = users.splice(index, 1)[0];
 
     // Remove posted image
-    if(user.imgExt) {
-        const fileName = user.id + '.' + user.imgExt;
-        fs.unlink(PATH + fileName, (err) => {
-            if(err)
-                console.log(err);
-        });
-    }
+    if(user.imgExt)
+        RemoveImage(user.id + '.' + user.imgExt);
 
     console.log(user)
+
+    let chatPtnrID = -1;
 
     // Go through all the users, finding matches in the removed user's lists, and removing that user from their own lists.
     for(let i = 0; i < users.length; i++) {
@@ -97,31 +58,20 @@ const RemoveUser = (io, socket) => {
 
         if(users[i].matchChatID == user.id) {
             users[i].matchChatID = -1;
+            chatPtnrID = users[i].id;
         }
     }
 
-    // Break off direct chat if user was engaged.
-    if(user.matchChatID !== -1) {
-        io.to(user.matchChatID).emit("EndChat");
-    }
-    
-    // Have everyone remove this user from their lists.
-    socket.broadcast.emit("RemoveUser", socket.id);
+    return chatPtnrID;
 };
 
-const GetImage = (socketID, imgExt) => {
-    const fileName = socketID + '.' + imgExt;
-    let data = fs.readFileSync(PATH + fileName);
-    console.log(data);
-    return "data:image/" + imgExt + ";base64,"+ data.toString("base64");
-};
 const GetUser = (id) =>  {
     const user = users.find((user) => user.id === id);
     let imgSrc = null;
     if(user.imgExt) {
         imgSrc = GetImage(user.id, user.imgExt);
     }
-    return { id: user.id, name: user.name, imgSrc };
+    return { id: user.id, name: user.name, imgSrc, likesMe: false };
 };
 const GetUsers = (excludeId) => {
     var retArr = [];
@@ -135,15 +85,61 @@ const GetUsers = (excludeId) => {
                 imgSrc = GetImage(users[i].id, users[i].imgExt);
             }
 
-            retArr.push({ id: users[i].id, name: users[i].name, imgSrc });
+            retArr.push({ id: users[i].id, name: users[i].name, imgSrc, likesMe: false });
         }
     }
 
     return retArr;
 };
 
+const LikeUserToggle = (thisUserID, otherUserID) =>  {
+    let thisUser = null;
+    let otherUser = null;
+
+    for(user of users) {
+        if(user.id == thisUserID)
+            thisUser = user;
+        else if(user.id == otherUserID)
+            otherUser = user;
+    }
+
+    if(thisUser === null || otherUser === null) {
+        console.log(`One of the users is no longer active & cannot be liked. UserID ${thisUserID} is ${thisUserID}, and the other UserID ${otherUserID} is ${otherUserID}.`);
+        return null;
+    }
+
+    //matchReqsIn: [], matchReqsOut: [], matchChatID: -1
+    let idIndex = thisUser.matchReqsOut.indexOf(otherUserID);
+
+    // "I" didn't like "them" previously
+    if(idIndex === -1) {
+        // now I do.
+        thisUser.matchReqsOut.push(otherUserID);
+        otherUser.matchReqsIn.push(thisUserID);
+        // "They" already liked me,
+        // if(thisUser.matchReqsIn.indexOf(otherUserID) > -1) {
+        //     // So now we match.
+
+        // }
+        return true;
+    }
+    // "I" liked "them" previously
+    else {
+        // now I don't.
+        thisUser.matchReqsOut.splice(idIndex, 1);
+        idIndex = otherUser.matchReqsIn.indexOf(thisUserID);
+        otherUser.matchReqsIn.splice(idIndex, 1);
+        // "They" already liked me,
+        // if(thisUser.matchReqsIn.indexOf(otherUserID) > -1) {
+        //     // So we no longer match.
+            
+        // }
+        return false;
+    }
+};
+
 
 //const index = users.findIndex((user) => user.id === id);
 //const getUsersInRoom = (room) => users.filter((user) => user.room === room);
 
-module.exports = { AddUser, UploadImage, RemoveUser, GetUser, GetUsers };
+module.exports = { AddUser, RemoveUser, GetUser, GetUsers, LikeUserToggle };
