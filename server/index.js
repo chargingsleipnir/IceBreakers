@@ -6,7 +6,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-const { AddUser, RemoveUser, GetUser, GetUsers, LikeUserToggle, LogMessage } = require('./users.js');
+const { AddUser, RemoveUser, GetUsers } = require('./users.js');
 const { UploadImage } = require('./imageHdlr.js');
 
 // VARIABLES -----
@@ -32,26 +32,9 @@ io.on("connection", (socket) => {
         CB(GetUsers(socket.id));
     });
 
-    socket.on('LikeUserToggle', (userID, CB) => {
-        const otherUserLiked = LikeUserToggle(socket.id, userID);
-        CB(otherUserLiked);
-
-        io.to(userID).emit("RecLikeToggle", { socketID: socket.id, likesMe: otherUserLiked });
+    socket.on('LikeUserToggle', (data) => {
+        io.to(data.userID).emit("RecLikeToggle", { socketID: socket.id, likesMe: data.isLiked });
     });
-
-    // socket.on('join', ({ name, room }, Callback) => {
-    //     const { error, user } = addUser({ id: socket.id, name, room });
-
-    //     if(error) return Callback(error);
-
-    //     socket.emit('message', { user: 'admin', text: `${user.name}, welcome to room ${user.room}`});
-    //     socket.broadcast.to(user.room).emit('message', { user: 'admin', text: `${user.name} has joined. `})
-    //     socket.join(user.room);
-
-    //     io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
-
-    //     Callback();
-    // });
 
     socket.on('ImageUploadSlice', (data) => {
         UploadImage(socket.id, data, (slice) => {
@@ -64,18 +47,8 @@ io.on("connection", (socket) => {
         });        
     });
 
-    socket.on('GetMessages', ( data, Callback ) => {
-
-    });
-    socket.on('SendMessage', ( data, Callback ) => {
-        const success = LogMessage(socket.id, data);
-
-        if(success) {
-            //console.log(`From user "${socket.id}" to user "${data.chatPtnrID}", sending msg: "${data.msgText}"`);
-            io.to(data.chatPtnrID).emit('RecMessage', { senderID: socket.id, msgText: data.msgText });
-        }
-
-        Callback(success);
+    socket.on('SendMessage', ( data ) => {
+        io.to(data.chatPtnrID).emit('RecMessage', { senderID: socket.id, msgText: data.msgText });
     });
 
     socket.on("disconnect", () => {
@@ -84,10 +57,6 @@ io.on("connection", (socket) => {
 
         // Have everyone remove this user from their lists.
         socket.broadcast.emit("RemoveUser", socket.id);
-
-        // if(user) {
-        //     io.to(user.room).emit('message', { user: 'admin', text: `${user.name} has left.` })
-        // }
     });
 });
 

@@ -19,14 +19,12 @@ class Chat extends Component {
         console.log(`SendMessage called in Chat.js, msgText: "${this.state.msgText}" to user: "${this.props.user_Chat.id}"`);
 
         if(this.state.msgText) {
-            this.props.socket.emit('SendMessage', { msgText: this.state.msgText, chatPtnrID: this.props.user_Chat.id }, (success) => {
-                if(!success || !this.props.user_Chat_Active) {
-                    console.warn("Message not sent, a user could not be located on the server.");
-                }
+            this.props.socket.emit('SendMessage', { msgText: this.state.msgText, chatPtnrID: this.props.user_Chat.id });
+            if(!this.props.user_Chat_Active)
+                console.warn("Message not sent, that user has been removed from the server.");
 
-                this.props.OnSendMessage(this.props.user_Chat.id, this.state.msgText);
-                this.setState({ msgText: '' });
-            });
+            this.props.OnSendMessage(this.props.user_Chat.id, this.state.msgText);
+            this.setState({ msgText: '' });
         }
     };
 

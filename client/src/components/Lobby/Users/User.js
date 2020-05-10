@@ -17,7 +17,7 @@ const User = ({user, LikeUserToggle, ToPageChat}) => {
                 <div>{user.name}</div>
             </div>
             <div>
-                <button className="mt-2" onClick={() => { LikeUserToggle(user.id); }}>
+                <button className="mt-2" onClick={() => { LikeUserToggle(user.id, !user.likeThem); }}>
                     { html_likeBtnVisual }
                 </button>
                 <button className="mt-2 position-relative" onClick={() => { ToPageChat(user); }} disabled={!mutual} >

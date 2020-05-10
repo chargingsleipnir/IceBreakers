@@ -81,17 +81,16 @@ class PageSelection extends Component {
         });
     };
 
-    LikeUserToggle (userID) {
-        this.props.socket.emit("LikeUserToggle", userID, (userLiked) => {
-            this.setState(prevState => ({ 
-                users: prevState.users.map((elem) => elem.id === userID ? {...elem, likeThem: userLiked } : elem), 
-            }));
-        });
+    LikeUserToggle (userID, isLiked) {
+        this.props.socket.emit("LikeUserToggle", { userID, isLiked });
+        this.setState(prevState => ({ 
+            users: prevState.users.map((elem) => elem.id === userID ? {...elem, likeThem: isLiked } : elem)
+        }));
     };
 
     ToPageChat (user_Chat) {
         this.setState(prevState => ({ 
-            users: prevState.users.map((elem) => elem.id === user_Chat.id ? {...elem, unreadMsg: false } : elem), 
+            users: prevState.users.map((elem) => elem.id === user_Chat.id ? {...elem, unreadMsg: false } : elem),
             user_Chat, 
             page: pages.CHAT 
         }));
