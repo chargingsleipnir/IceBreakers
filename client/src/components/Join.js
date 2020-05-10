@@ -95,6 +95,9 @@ const Join = () => {
         SetSrc(src);
     };
 
+    // The elements on this page have been disabled, implies that the submit button was hit.
+    const html_LoadBar = disabled && file !== null ? <LoadBar percent={percent} /> : "";
+    
     //console.log(`Main body called in Join.js`);
 
     return (
@@ -110,7 +113,8 @@ const Join = () => {
                     <ImgUpload GetImgDetails={GetImgDetails} disabled={disabled} />
                     <button className="button mt-2" onClick={submitProfile} disabled={disabled}>Sign In</button>
                 </div>
-                <LoadBar reveal={disabled && file !== null} percent={percent} />
+                {/* // TODO: Fade out everything else, and centre this, overlapping existing elements. */}
+                { html_LoadBar }
             </div>
         )
     );

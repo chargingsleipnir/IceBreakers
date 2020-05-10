@@ -2,7 +2,7 @@ import React from 'react';
 import User from './User';
 import ScrollToBottom from 'react-scroll-to-bottom';
 
-const Users = ({ socket, users, ToPageChat }) => (
+const Users = ({ users, LikeUserToggle, ToPageChat }) => (
     <div className="UsersOuterContainer">
         <div className="UsersInnerContainer">
             <h1 className="heading">Users</h1>
@@ -11,7 +11,7 @@ const Users = ({ socket, users, ToPageChat }) => (
                 { 
                     users.map((user, i) => 
                         <li key={i} >
-                            <User socket={socket} user={user} ToPageChat={ToPageChat} />
+                            <User user={user} LikeUserToggle={LikeUserToggle} ToPageChat={ToPageChat} />
                         </li>
                     )
                 }

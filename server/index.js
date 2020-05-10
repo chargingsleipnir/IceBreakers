@@ -80,11 +80,7 @@ io.on("connection", (socket) => {
 
     socket.on("disconnect", () => {
         console.log(`Socket connection removed: ${socket.id}`);
-        const chatPtnrID = RemoveUser(socket.id);
-
-        // End chat window of another user if engaged with this one.
-        if(chatPtnrID !== -1)
-            io.to(chatPtnrID).emit("EndChat");
+        RemoveUser(socket.id);
 
         // Have everyone remove this user from their lists.
         socket.broadcast.emit("RemoveUser", socket.id);

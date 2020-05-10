@@ -8,9 +8,17 @@
 
 .notificationBadge {
     position: absolute;
-    top: -7px;
-    right: -7px;
-    padding: 5px 5px;
+    top: -6px;
+    right: -6px;
+    padding: 4px 4px;
     border-radius: 50%;
     background: red;
+}
+
+.fas.fa-heart {
+    color: red;
+}
+
+.fa-stack {
+    size: 1em;
 }

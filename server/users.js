@@ -6,7 +6,8 @@ const ClientUser = function(id, name, imgSrc) {
     return {
         id: id || '', 
         name: name || '', 
-        imgSrc: imgSrc || null, 
+        imgSrc: imgSrc || null,
+        likeThem: false,
         likesMe: false,
         unreadMsg: false,
         messages: []
@@ -27,8 +28,7 @@ const AddUser = ({ id, name, ext }) => {
         name, 
         imgExt: ext, 
         matchReqsIn: [], 
-        matchReqsOut: [], 
-        matchChatID: -1,
+        matchReqsOut: [],
         chatMap: {}
     };
     users.push(user);
@@ -51,37 +51,26 @@ const RemoveUser = (socketID) => {
     }
 
     // Remove this player, 
-    const user = users.splice(index, 1)[0];
+    const userRemoved = users.splice(index, 1)[0];
 
     // Remove posted image
-    if(user.imgExt)
-        RemoveImage(user.id + '.' + user.imgExt);
-
-    //console.log(user)
-
-    let chatPtnrID = -1;
+    if(userRemoved.imgExt)
+        RemoveImage(userRemoved.id + '.' + userRemoved.imgExt);
 
     // Go through all the users, finding matches in the removed user's lists, and removing that user from their own lists.
     for(let i = 0; i < users.length; i++) {
-        let index = user.matchReqsIn.indexOf(users[i].id);
+        let index = userRemoved.matchReqsIn.indexOf(users[i].id);
         if(index > -1) {
-            let listIndex = users[i].matchReqsOut.indexOf(user.id);
+            let listIndex = users[i].matchReqsOut.indexOf(userRemoved.id);
             users[i].matchReqsOut.splice(listIndex, 1);
         }
 
-        index = user.matchReqsOut.indexOf(users[i].id);
+        index = userRemoved.matchReqsOut.indexOf(users[i].id);
         if(index > -1) {
-            let listIndex = users[i].matchReqsIn.indexOf(user.id);
+            let listIndex = users[i].matchReqsIn.indexOf(userRemoved.id);
             users[i].matchReqsIn.splice(listIndex, 1);
         }
-
-        if(users[i].matchChatID == user.id) {
-            users[i].matchChatID = -1;
-            chatPtnrID = users[i].id;
-        }
     }
-
-    return chatPtnrID;
 };
 
 const GetUser = (id) =>  {
@@ -127,7 +116,6 @@ const LikeUserToggle = (thisUserID, otherUserID) =>  {
         return null;
     }
 
-    //matchReqsIn: [], matchReqsOut: [], matchChatID: -1
     let idIndex = thisUser.matchReqsOut.indexOf(otherUserID);
 
     // "I" didn't like "them" previously
@@ -135,11 +123,6 @@ const LikeUserToggle = (thisUserID, otherUserID) =>  {
         // now I do.
         thisUser.matchReqsOut.push(otherUserID);
         otherUser.matchReqsIn.push(thisUserID);
-        // "They" already liked me,
-        // if(thisUser.matchReqsIn.indexOf(otherUserID) > -1) {
-        //     // So now we match.
-
-        // }
         return true;
     }
     // "I" liked "them" previously
@@ -148,11 +131,6 @@ const LikeUserToggle = (thisUserID, otherUserID) =>  {
         thisUser.matchReqsOut.splice(idIndex, 1);
         idIndex = otherUser.matchReqsIn.indexOf(thisUserID);
         otherUser.matchReqsIn.splice(idIndex, 1);
-        // "They" already liked me,
-        // if(thisUser.matchReqsIn.indexOf(otherUserID) > -1) {
-        //     // So we no longer match.
-            
-        // }
         return false;
     }
 };

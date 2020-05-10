@@ -20,7 +20,7 @@ class Chat extends Component {
 
         if(this.state.msgText) {
             this.props.socket.emit('SendMessage', { msgText: this.state.msgText, chatPtnrID: this.props.user_Chat.id }, (success) => {
-                if(!success) {
+                if(!success || !this.props.user_Chat_Active) {
                     console.warn("Message not sent, a user could not be located on the server.");
                 }
 
@@ -34,23 +34,24 @@ class Chat extends Component {
 
     render() {
 
-        console.log(this.props.user_Chat.unreadMsg);
+        //console.log(this.props.user_Chat.unreadMsg);
 
         return (
             <div className="outerContainer">
                 <div className="container">
-                    <InfoBar ToPageUsers={this.props.ToPageUsers} user_Chat={this.props.user_Chat} />
+                    <InfoBar ToPageUsers={this.props.ToPageUsers} user_Chat={this.props.user_Chat} user_Chat_Active={this.props.user_Chat_Active} />
                     <Messages messages={this.props.user_Chat.messages} />
                     <form className="form">
                         <input 
                             className="input" 
                             type="text" 
                             placeholder="message" 
-                            value={this.state.msgText} 
+                            value={this.props.user_Chat_Active ? this.state.msgText : ""} 
                             onChange={(event) => this.setState({ msgText: event.target.value })} 
                             onKeyPress={event => event.key === "Enter" ? this.SendMessage(event) : null}
+                            disabled={!this.props.user_Chat_Active}
                         />
-                        <button className="sendButton" onClick={(event) => this.SendMessage(event)}>Send</button>
+                        <button className="sendButton" onClick={(event) => this.SendMessage(event)} disabled={!this.props.user_Chat_Active}>Send</button>
                     </form>
                 </div>
             </div>

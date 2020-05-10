@@ -26,6 +26,11 @@ class PageSelection extends Component {
             let removeIndex = this.state.users.findIndex((user) => user.id === userID);
             this.state.users.splice(removeIndex, 1);
             this.setState({ users: this.state.users });
+
+            //* In lieu of this, check if the user_Chat is still in the general users list, and if not, disable the chat features, but just leave the existing messages up.
+            // if(this.state.user_Chat)
+            //     if(this.state.user_Chat.id === userID)
+            //         this.setState({ user_Chat: null });
         });
         props.socket.on("RecLikeToggle", (userData) => {
             console.log(`Liked by user: "${userData.socketID}"`);
@@ -63,12 +68,25 @@ class PageSelection extends Component {
             this.setState({ users: this.state.users });
         });
 
+        this.ToPageUsers = this.ToPageUsers.bind(this);
+        this.LikeUserToggle = this.LikeUserToggle.bind(this);
         this.ToPageChat = this.ToPageChat.bind(this);
         this.OnSendMessage = this.OnSendMessage.bind(this);
     }
 
     ToPageUsers () {
+        this.setState({ 
+            user_Chat: null, 
+            page: pages.USERS 
+        });
+    };
 
+    LikeUserToggle (userID) {
+        this.props.socket.emit("LikeUserToggle", userID, (userLiked) => {
+            this.setState(prevState => ({ 
+                users: prevState.users.map((elem) => elem.id === userID ? {...elem, likeThem: userLiked } : elem), 
+            }));
+        });
     };
 
     ToPageChat (user_Chat) {
@@ -79,6 +97,7 @@ class PageSelection extends Component {
         }));
     }
 
+    // TODO: Protect from user being removed
     OnSendMessage (userToID, msgText) {
         console.log(`Sent message: "${msgText}" to user: "${userToID}"`);
         let changeIndex = this.state.users.findIndex(({ id }) => id === userToID);
@@ -88,9 +107,15 @@ class PageSelection extends Component {
 
     render() {
         if(this.state.page === pages.USERS)
-            return ( <Users socket={this.props.socket} users={this.state.users} ToPageChat={this.ToPageChat} /> );
-        else if(this.state.page === pages.CHAT)
-            return ( <Chat socket={this.props.socket} user_Chat={this.state.user_Chat} OnSendMessage={this.OnSendMessage} ToPageUsers={this.ToPageUsers} /> );
+            return ( <Users users={this.state.users} LikeUserToggle={this.LikeUserToggle} ToPageChat={this.ToPageChat} /> );
+        else if(this.state.page === pages.CHAT) {
+            let user_Chat_Active = true;
+            if(this.state.user_Chat)
+                if(this.state.users.findIndex(({ id }) => id === this.state.user_Chat.id) === -1)
+                    user_Chat_Active = false;
+
+            return ( <Chat socket={this.props.socket} user_Chat={this.state.user_Chat} user_Chat_Active={user_Chat_Active} OnSendMessage={this.OnSendMessage} ToPageUsers={this.ToPageUsers} /> );
+        }
         else if(this.state.page === pages.CHOOSE_ICEBREAKER)
             return ( <ChooseIceBreaker /> );
     }

@@ -1,21 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import defaultImg from '../../../images/SpeechlessGuy.png';
 
-const User = ({socket, user, ToPageChat}) => {
-    const [likeThem, SetLikeThem] = useState(false);
+const User = ({user, LikeUserToggle, ToPageChat}) => {
 
-    const likeBtnFntAwsName = likeThem ? "fas fa-heart" : "far fa-heart";
+    let html_likeBtnVisual = user.likeThem ? <i className="fas fa-heart"></i> : <i className="far fa-heart"></i>;
 
-    const mutual = likeThem && user.likesMe;
-    const speechBtnFntAwsName = mutual ? "fas fa-comment" : "fas fa-comment-slash";
+    const mutual = user.likeThem && user.likesMe;
+    const  html_SpeechBtnVisual = mutual ? <i className="fas fa-comment"></i> : <i className="fas fa-comment-slash"></i>;
 
-    const LikeUser = () => {
-        socket.emit("LikeUserToggle", user.id, (userLiked) => {
-            SetLikeThem(userLiked);
-        });
-    };
+    const html_UnreadMsgNotif = user.unreadMsg ? <span className="notificationBadge"></span> : "";
 
-    const unreadMsgNotif = user.unreadMsg ? <span className="notificationBadge"></span> : "";
     return (
         <div>
             <div>
@@ -23,12 +17,12 @@ const User = ({socket, user, ToPageChat}) => {
                 <div>{user.name}</div>
             </div>
             <div>
-                <button className="mt-2" onClick={LikeUser}>
-                    <i className={likeBtnFntAwsName}></i>
+                <button className="mt-2" onClick={() => { LikeUserToggle(user.id); }}>
+                    { html_likeBtnVisual }
                 </button>
                 <button className="mt-2 position-relative" onClick={() => { ToPageChat(user); }} disabled={!mutual} >
-                    <i className={speechBtnFntAwsName}></i>
-                    { unreadMsgNotif }
+                    { html_SpeechBtnVisual }
+                    { html_UnreadMsgNotif }
                 </button>
             </div>
         </div>
