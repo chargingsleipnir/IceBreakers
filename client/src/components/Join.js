@@ -5,7 +5,6 @@ import { ENDPOINT, SLICE_SIZE } from '../Consts';
 import PageSelection from './PageSelection';
 import ImgUpload from './ImgUpload';
 import LoadBar from './LoadBar';
-import Gbl from '../Global';
 
 let socket;
 socket = io(ENDPOINT);
@@ -29,18 +28,11 @@ const Join = () => {
             return;
         }
 
-        // Set global user name
-        Gbl.user.name = name;
-
         SetDisabled(true);
 
         console.log(`Submit clicked - Name: ${name}, Ext: ${ext}, src: ${src}, file:`, file);
 
-        // TODO: Shut down UI while uploading (or just animate it away anyway)
-        // TODO: Phase/animate in users UI
-
         if(file === null) {
-            // TODO: Smooth transition functionality? Or just jump to next, not a big deal for scope of app.
             socket.emit('AddUser', { name, ext }, () => {
                 SetSignedIn(true);
             });
@@ -70,7 +62,6 @@ const Join = () => {
                     // Progress bar
                     SetPercent(100);
 
-                    // TODO: Smooth transition functionality? Or just jump to next, not a big deal for scope of app.
                     socket.emit('AddUser', { name, ext }, () => {
                         SetSignedIn(true);
                     });
@@ -113,7 +104,6 @@ const Join = () => {
                     <ImgUpload GetImgDetails={GetImgDetails} disabled={disabled} />
                     <button className="button mt-2" onClick={submitProfile} disabled={disabled}>Sign In</button>
                 </div>
-                {/* // TODO: Fade out everything else, and centre this, overlapping existing elements. */}
                 { html_LoadBar }
             </div>
         )

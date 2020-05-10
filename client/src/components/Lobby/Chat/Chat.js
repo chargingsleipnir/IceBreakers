@@ -8,11 +8,6 @@ class Chat extends Component {
 
     state = {  msgText: "" };
 
-    // TODO: Tried using this to not update every character typed, but without "value={this.state.msgText}" set on teh input field, I can't reset the value to ''.
-    // shouldComponentUpdate(nextProps, nextState) {
-    //     return nextState.msgText === '';
-    // }
-
     SendMessage (event) {
         event.preventDefault();
 

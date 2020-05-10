@@ -37,9 +37,6 @@ class PageSelection extends Component {
             let changeIndex = this.state.users.findIndex((user) => user.id === userData.socketID);
             this.state.users[changeIndex].likesMe = userData.likesMe;
             this.setState({ users: this.state.users });
-
-            // TODO: I can also check if I'm in conversation with the other user and shut if down if need be.
-            //* The conversation doesn't necessarily need to be forcibly shut down at this point? Maybe just some other way of indicating the unmatch has taken place.
         });
 
         props.socket.emit("GetUsers", {}, (users) => {
@@ -96,7 +93,6 @@ class PageSelection extends Component {
         }));
     }
 
-    // TODO: Protect from user being removed
     OnSendMessage (userToID, msgText) {
         console.log(`Sent message: "${msgText}" to user: "${userToID}"`);
         let changeIndex = this.state.users.findIndex(({ id }) => id === userToID);

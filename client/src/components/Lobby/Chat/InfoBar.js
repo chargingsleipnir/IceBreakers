@@ -1,11 +1,9 @@
 import React from 'react';
 import defaultImg from '../../../images/SpeechlessGuy.png';
 
-// TODO: Implement button to go back to the messages page
 const InfoBar = ({ ToPageUsers, user_Chat, user_Chat_Active }) => (
     <div className="infoBar">
         <div className="leftInnerContainer">
-            {/* // TODO: If they truly look the same or similar enough, make this a shared component with that found in User.js */}
             <button onClick={ToPageUsers}>
                 <i className="fas fa-arrow-left"></i>
             </button>
