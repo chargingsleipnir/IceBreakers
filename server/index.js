@@ -6,7 +6,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-const { AddUser, RemoveUser, GetUser, GetUsers, LikeUserToggle } = require('./users.js');
+const { AddUser, RemoveUser, GetUser, GetUsers, LikeUserToggle, LogMessage } = require('./users.js');
 const { UploadImage } = require('./imageHdlr.js');
 
 // VARIABLES -----
@@ -39,10 +39,6 @@ io.on("connection", (socket) => {
         io.to(userID).emit("RecLikeToggle", { socketID: socket.id, likesMe: otherUserLiked });
     });
 
-    // socket.on('ImageDownload', (ofSocketID) => {
-    //     DownloadImage(socket, ofSocketID);
-    // });
-
     // socket.on('join', ({ name, room }, Callback) => {
     //     const { error, user } = addUser({ id: socket.id, name, room });
 
@@ -68,14 +64,19 @@ io.on("connection", (socket) => {
         });        
     });
 
-    // socket.on('sendMessage', ( message, Callback ) => {
-    //     const user = GetUser(socket.id);
+    socket.on('GetMessages', ( data, Callback ) => {
 
-    //     //console.log(`Sending room: "${user.room}" received msg: "${message}"`);
-    //     io.to(user.room).emit('message', { user: user.name, text: message });
-    //     io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
-    //     Callback();
-    // });
+    });
+    socket.on('SendMessage', ( data, Callback ) => {
+        const success = LogMessage(socket.id, data);
+
+        if(success) {
+            //console.log(`From user "${socket.id}" to user "${data.chatPtnrID}", sending msg: "${data.msgText}"`);
+            io.to(data.chatPtnrID).emit('RecMessage', { senderID: socket.id, msgText: data.msgText });
+        }
+
+        Callback(success);
+    });
 
     socket.on("disconnect", () => {
         console.log(`Socket connection removed: ${socket.id}`);

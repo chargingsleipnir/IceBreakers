@@ -39,6 +39,8 @@ const ImgUpload = ({ GetImgDetails, disabled }) => {
         GetImgDetails(ext, file, src);
     };
 
+    //console.log(`Main body called in ImgUpload.js`);
+
     return (
         <div className="mt-2">
             <img src={src} alt="User avatar" width="500" height="500" />

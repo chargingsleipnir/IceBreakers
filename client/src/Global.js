@@ -1,3 +1,4 @@
+// TODO: not actually using these yet, might not need them.
 const Gbl = (() => {
 
     return {

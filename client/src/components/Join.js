@@ -1,19 +1,28 @@
 import React, { useState } from 'react';
-import { pages, SLICE_SIZE } from '../../Consts';
-import ImgUpload from '../ImgUpload';
-import LoadBar from '../LoadBar';
-import Gbl from '../../Global';
+import io from 'socket.io-client';
+import { ENDPOINT, SLICE_SIZE } from '../Consts';
 
-const Join = ({socket, GoToPage}) => {
-    const [name, SetName] = useState('');
+import PageSelection from './PageSelection';
+import ImgUpload from './ImgUpload';
+import LoadBar from './LoadBar';
+import Gbl from '../Global';
+
+let socket;
+socket = io(ENDPOINT);
+
+const Join = () => {
+    const nameField = React.createRef();
+
     const [ext, SetExt] = useState('');
     const [file, SetFile] = useState(null);
     const [src, SetSrc] = useState('');
     const [percent, SetPercent] = useState(0);
     const [disabled, SetDisabled] = useState(false);
+    const [signedIn, SetSignedIn] = useState(false);
 
     const submitProfile = (event) => {
         event.preventDefault();
+        const name = nameField.current.value;
         
         if(name === '') {
             alert("Name required");
@@ -25,15 +34,15 @@ const Join = ({socket, GoToPage}) => {
 
         SetDisabled(true);
 
-        console.log(`Submit clicked - Name: ${name}, Ext: ${ext}, file: ${file}, src: ${src}`);
+        console.log(`Submit clicked - Name: ${name}, Ext: ${ext}, src: ${src}, file:`, file);
 
         // TODO: Shut down UI while uploading (or just animate it away anyway)
         // TODO: Phase/animate in users UI
 
         if(file === null) {
+            // TODO: Smooth transition functionality? Or just jump to next, not a big deal for scope of app.
             socket.emit('AddUser', { name, ext }, () => {
-                // TODO: Smooth transition functionality? Or just jump to next, not a big deal for scope of app.
-                GoToPage(pages.USERS);
+                SetSignedIn(true);
             });
         }
         else {
@@ -61,9 +70,9 @@ const Join = ({socket, GoToPage}) => {
                     // Progress bar
                     SetPercent(100);
 
+                    // TODO: Smooth transition functionality? Or just jump to next, not a big deal for scope of app.
                     socket.emit('AddUser', { name, ext }, () => {
-                        // TODO: Smooth transition functionality? Or just jump to next, not a big deal for scope of app.
-                        GoToPage(pages.USERS);
+                        SetSignedIn(true);
                     });
                 };
                 fileReader.readAsDataURL(file);
@@ -80,22 +89,30 @@ const Join = ({socket, GoToPage}) => {
     };
 
     const GetImgDetails = (ext, file, src) => {
-        console.log(`Ext: ${ext}, file: ${file}, src: ${src}`);
+        console.log(`Ext: ${ext}, src: ${src}, file:`, file);
         SetExt(ext);
         SetFile(file);
         SetSrc(src);
     };
 
+    //console.log(`Main body called in Join.js`);
+
     return (
-        <div className="joinOuterContainer">
-            <div className="joinInnerContainer">
-                <h1 className="heading test1">Join</h1>
-                <div><input placeholder="Name" className="joinInput" type="text" onChange={(event) => SetName(event.target.value)} disabled={disabled} /></div>
-                <ImgUpload GetImgDetails={GetImgDetails} disabled={disabled} />
-                <button className="button mt-2" onClick={submitProfile} disabled={disabled}>Sign In</button>
+        signedIn ? (
+            <PageSelection socket={socket} />
+        ) : (
+            <div className="joinOuterContainer">
+                <div className="joinInnerContainer">
+                    <h1 className="heading test1">Join</h1>
+                    <div>
+                        <input type="text" className="joinInput" placeholder="Name" ref={nameField} disabled={disabled} />
+                    </div>
+                    <ImgUpload GetImgDetails={GetImgDetails} disabled={disabled} />
+                    <button className="button mt-2" onClick={submitProfile} disabled={disabled}>Sign In</button>
+                </div>
+                <LoadBar reveal={disabled && file !== null} percent={percent} />
             </div>
-            <LoadBar reveal={disabled && file !== null} percent={percent} />
-        </div>
+        )
     );
 };
 

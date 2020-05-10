@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { pages } from '../Consts';
-import defaultImg from '../images/SpeechlessGuy.png';
+import defaultImg from '../../../images/SpeechlessGuy.png';
 
-const User = ({socket, user, GoToPage}) => {
+const User = ({socket, user, ToPageChat}) => {
     const [likeThem, SetLikeThem] = useState(false);
 
     const likeBtnFntAwsName = likeThem ? "fas fa-heart" : "far fa-heart";
@@ -16,6 +15,7 @@ const User = ({socket, user, GoToPage}) => {
         });
     };
 
+    const unreadMsgNotif = user.unreadMsg ? <span className="notificationBadge"></span> : "";
     return (
         <div>
             <div>
@@ -26,9 +26,9 @@ const User = ({socket, user, GoToPage}) => {
                 <button className="mt-2" onClick={LikeUser}>
                     <i className={likeBtnFntAwsName}></i>
                 </button>
-                <button className="mt-2" onClick={() => { GoToPage(pages.CHAT); }} disabled={!mutual} >
+                <button className="mt-2 position-relative" onClick={() => { ToPageChat(user); }} disabled={!mutual} >
                     <i className={speechBtnFntAwsName}></i>
-                    {/* //TODO: Add dot indicator that a message has been recieved.  */}
+                    { unreadMsgNotif }
                 </button>
             </div>
         </div>

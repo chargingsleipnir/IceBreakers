@@ -5,3 +5,12 @@
     -o-transition: none;
     transition: none;
 }
+
+.notificationBadge {
+    position: absolute;
+    top: -7px;
+    right: -7px;
+    padding: 5px 5px;
+    border-radius: 50%;
+    background: red;
+}

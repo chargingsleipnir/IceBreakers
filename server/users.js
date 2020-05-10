@@ -2,6 +2,17 @@ const { GetImage, RemoveImage } = require('./imageHdlr.js');
 
 const users = [];
 
+const ClientUser = function(id, name, imgSrc) {
+    return {
+        id: id || '', 
+        name: name || '', 
+        imgSrc: imgSrc || null, 
+        likesMe: false,
+        unreadMsg: false,
+        messages: []
+    };
+}
+
 const AddUser = ({ id, name, ext }) => {
 
     //console.log(`Adding user id: "${id}", name: "${name}"`);
@@ -11,7 +22,15 @@ const AddUser = ({ id, name, ext }) => {
     }
 
     // Create user
-    const user = { id, name, imgExt: ext, matchReqsIn: [], matchReqsOut: [], matchChatID: -1 };
+    const user = { 
+        id,
+        name, 
+        imgExt: ext, 
+        matchReqsIn: [], 
+        matchReqsOut: [], 
+        matchChatID: -1,
+        chatMap: {}
+    };
     users.push(user);
 
     
@@ -21,7 +40,7 @@ const AddUser = ({ id, name, ext }) => {
     }
 
     // Return user shorthand, all that's needed for the client.
-    return { id, name, imgSrc, likesMe: false };
+    return new ClientUser(id, name, imgSrc);
 };
 
 const RemoveUser = (socketID) => {
@@ -38,7 +57,7 @@ const RemoveUser = (socketID) => {
     if(user.imgExt)
         RemoveImage(user.id + '.' + user.imgExt);
 
-    console.log(user)
+    //console.log(user)
 
     let chatPtnrID = -1;
 
@@ -71,7 +90,7 @@ const GetUser = (id) =>  {
     if(user.imgExt) {
         imgSrc = GetImage(user.id, user.imgExt);
     }
-    return { id: user.id, name: user.name, imgSrc, likesMe: false };
+    return new ClientUser(user.id, user.name, imgSrc);
 };
 const GetUsers = (excludeId) => {
     var retArr = [];
@@ -85,7 +104,7 @@ const GetUsers = (excludeId) => {
                 imgSrc = GetImage(users[i].id, users[i].imgExt);
             }
 
-            retArr.push({ id: users[i].id, name: users[i].name, imgSrc, likesMe: false });
+            retArr.push(new ClientUser(users[i].id, users[i].name, imgSrc));
         }
     }
 
@@ -138,8 +157,35 @@ const LikeUserToggle = (thisUserID, otherUserID) =>  {
     }
 };
 
+const LogMessage = (socketID, msgData) => {
+    let sendUser = null;
+    let recUser = null;
 
-//const index = users.findIndex((user) => user.id === id);
-//const getUsersInRoom = (room) => users.filter((user) => user.room === room);
+    for(user of users) {
+        if(user.id == socketID)
+            sendUser = user;
+        else if(user.id == msgData.chatPtnrID)
+            recUser = user;
+    }
 
-module.exports = { AddUser, RemoveUser, GetUser, GetUsers, LikeUserToggle };
+    if(!sendUser || !recUser) {
+        console.warn("One of these users has been removed, cannot log message.");
+        return false;
+    }
+
+    // Update the messages for myself...
+    if(!sendUser.chatMap[recUser.id])
+        sendUser.chatMap[recUser.id] = [];
+
+    sendUser.chatMap[recUser.id].push(msgData.msgText);
+
+    // And the other user
+    if(!recUser.chatMap[sendUser.id])
+        recUser.chatMap[sendUser.id] = [];
+
+    recUser.chatMap[sendUser.id].push(msgData.msgText);
+
+    return true;
+};
+
+module.exports = { AddUser, RemoveUser, GetUser, GetUsers, LikeUserToggle, LogMessage };
