@@ -44,7 +44,9 @@ class Chat extends Component {
                             onKeyPress={event => event.key === "Enter" ? this.SendMessage(event) : null}
                             disabled={!this.props.user_Chat_Active}
                         />
-                        <button className="sendButton" onClick={(event) => this.SendMessage(event)} disabled={!this.props.user_Chat_Active}>Send</button>
+                        <button className="sendButton" onClick={(event) => this.SendMessage(event)} disabled={!this.props.user_Chat_Active}>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
                     </form>
                 </div>
             </div>

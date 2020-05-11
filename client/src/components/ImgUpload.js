@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 
+import LoadBar from './LoadBar';
 import defaultImg from '../images/SpeechlessGuy.png';
 
 let URL = window.URL || window.webkitURL;
 const extArr = ['jpg', 'jpeg', 'png', 'gif'];
 
-const ImgUpload = ({ GetImgDetails, disabled }) => {
+const ImgUpload = ({ GetImgDetails, disabled, loadFile, percent }) => {
     const [src, SetSrc] = useState(defaultImg);
 
     const imgChange = (event) => {
@@ -34,15 +35,20 @@ const ImgUpload = ({ GetImgDetails, disabled }) => {
         GetImgDetails(ext, file, src);
     };
 
+    const html_LoadBar = loadFile ? <LoadBar percent={percent} /> : "";
+
     //console.log(`Main body called in ImgUpload.js`);
 
     return (
         <div className="mt-2">
-            <img src={src} alt="User avatar" width="500" height="500" />
+            <img src={src} className="rounded-circle mt-5 mb-5" alt="User avatar" />
 
             <input id="HiddenFileUploader" placeholder="File" className="d-none" type="file" accept="image/*" capture="user" onChange={imgChange} disabled={disabled} />
             {/* Clicking this button activates the hidden file button above.  */}
-            <div><button className="button mt-2" onClick={() => { document.getElementById("HiddenFileUploader").click(); }} disabled={disabled}>Take/Upload picture</button></div>
+            <button className="btn btn-secondary btn-lg btn-block mt-2 position-relative" onClick={() => { document.getElementById("HiddenFileUploader").click(); }} disabled={disabled}>
+                <span>Take/Upload picture</span>
+                { html_LoadBar }
+            </button>
             
             {/* // TODO: Use mobile camera or webcam. - File uploader can act as both?
             <input id="HiddenPhotoUploader" placeholder="Image" className="d-none" type="file" accept="image/*" capture="user" />

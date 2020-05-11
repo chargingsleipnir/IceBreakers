@@ -4,7 +4,6 @@ import { ENDPOINT, SLICE_SIZE } from '../Consts';
 
 import PageSelection from './PageSelection';
 import ImgUpload from './ImgUpload';
-import LoadBar from './LoadBar';
 
 let socket;
 socket = io(ENDPOINT);
@@ -87,24 +86,27 @@ const Join = () => {
     };
 
     // The elements on this page have been disabled, implies that the submit button was hit.
-    const html_LoadBar = disabled && file !== null ? <LoadBar percent={percent} /> : "";
-    
+    const loadFile = disabled && file !== null;
+
     //console.log(`Main body called in Join.js`);
 
     return (
         signedIn ? (
             <PageSelection socket={socket} />
         ) : (
-            <div className="joinOuterContainer">
-                <div className="joinInnerContainer">
-                    <h1 className="heading test1">Join</h1>
+            <div className="position-relative h-100">
+                <div className="container-fluid h-100 d-flex flex-column justify-content-center align-items-center">
                     <div>
-                        <input type="text" className="joinInput" placeholder="Name" ref={nameField} disabled={disabled} />
+                        <h1 className="text-center text-white">Welcome</h1>
+                        <hr className="bg-light" />
+                        <input type="text" className="form-control form-control-lg" placeholder="Name" ref={nameField} disabled={disabled} />
                     </div>
-                    <ImgUpload GetImgDetails={GetImgDetails} disabled={disabled} />
-                    <button className="button mt-2" onClick={submitProfile} disabled={disabled}>Sign In</button>
+
+                    <div>
+                        <ImgUpload GetImgDetails={GetImgDetails} disabled={disabled} loadFile={loadFile} percent={percent} />
+                        <button className="btn btn-primary btn-lg btn-block mt-2" onClick={submitProfile} disabled={disabled}>Sign In</button>
+                    </div>
                 </div>
-                { html_LoadBar }
             </div>
         )
     );

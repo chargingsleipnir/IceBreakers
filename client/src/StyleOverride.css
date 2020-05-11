@@ -1,3 +1,7 @@
+html, body, #root {
+    height: 100vh;
+}
+
 .progress-bar.transitionNone {
     -webkit-transition: none;
     -moz-transition: none;
@@ -21,4 +25,18 @@
 
 .fa-stack {
     size: 1em;
+}
+
+img {
+    width: 70vw;
+    height: 70vw;
+    max-width: 256px;
+    max-height: 256px;
+    object-fit: cover;
+}
+
+#ImageUploadBar {
+    top: 0;
+    left: 0;
+    background-color: transparent;
 }
