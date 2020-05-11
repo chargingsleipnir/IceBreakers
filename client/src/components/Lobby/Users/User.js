@@ -11,16 +11,16 @@ const User = ({user, LikeUserToggle, ToPageChat}) => {
     const html_UnreadMsgNotif = user.unreadMsg ? <span className="notificationBadge"></span> : "";
 
     return (
-        <div>
-            <div>
-                <img src={user.imgSrc || defaultImg} alt="User Avatar" width="50" height="50" />
-                <div>{user.name}</div>
+        <div className="d-flex justify-content-between align-items-center">
+            <div className="d-flex align-items-center">
+                <img src={user.imgSrc || defaultImg} id="AvatarsUserList" className="rounded-circle" alt="User Avatar" />
+                <div className="ml-3">{user.name}</div>
             </div>
-            <div>
-                <button className="mt-2" onClick={() => { LikeUserToggle(user.id, !user.likeThem); }}>
+            <div className="d-flex align-items-center">
+                <button className="btn" onClick={() => { LikeUserToggle(user.id, !user.likeThem); }}>
                     { html_likeBtnVisual }
                 </button>
-                <button className="mt-2 position-relative" onClick={() => { ToPageChat(user); }} disabled={!mutual} >
+                <button className="btn position-relative" onClick={() => { ToPageChat(user); }} disabled={!mutual} >
                     { html_SpeechBtnVisual }
                     { html_UnreadMsgNotif }
                 </button>

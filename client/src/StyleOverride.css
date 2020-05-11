@@ -12,8 +12,8 @@ html, body, #root {
 
 .notificationBadge {
     position: absolute;
-    top: -6px;
-    right: -6px;
+    top: 0;
+    right: 0;
     padding: 4px 4px;
     border-radius: 50%;
     background: red;
@@ -27,7 +27,7 @@ html, body, #root {
     size: 1em;
 }
 
-img {
+img#AvatarSelected {
     width: 70vw;
     height: 70vw;
     max-width: 256px;
@@ -35,8 +35,19 @@ img {
     object-fit: cover;
 }
 
+img#AvatarsUserList {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
 #ImageUploadBar {
     top: 0;
     left: 0;
     background-color: transparent;
+}
+
+.list-group-item {
+    max-width: 1000px;
+    margin: 0 auto;
 }

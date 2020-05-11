@@ -41,7 +41,7 @@ const ImgUpload = ({ GetImgDetails, disabled, loadFile, percent }) => {
 
     return (
         <div className="mt-2">
-            <img src={src} className="rounded-circle mt-5 mb-5" alt="User avatar" />
+            <img src={src} id="AvatarSelected" className="rounded-circle mt-5 mb-5" alt="User avatar" />
 
             <input id="HiddenFileUploader" placeholder="File" className="d-none" type="file" accept="image/*" capture="user" onChange={imgChange} disabled={disabled} />
             {/* Clicking this button activates the hidden file button above.  */}
