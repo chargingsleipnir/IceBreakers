@@ -6,7 +6,7 @@ import PageSelection from './PageSelection';
 import ImgUpload from './ImgUpload';
 
 let socket;
-socket = io(ENDPOINT);
+socket = io();
 
 const Join = () => {
     const nameField = React.createRef();
