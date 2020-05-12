@@ -5,7 +5,7 @@ const { PATH, SLICE_SIZE } = require('./consts.js');
 var uploads = {};
 var uploadObj = { name: null, type: null, size: 0,  data: [], slice: 0 };
 
-const UploadImage = (socketID, data, CB) => {
+const UploadImage = (socketID, data) => {
     if(!uploads[socketID]) {
         uploads[socketID] = Object.assign({}, uploadObj, data);
         uploads[socketID].data = [];
@@ -21,19 +21,22 @@ const UploadImage = (socketID, data, CB) => {
         const fileBuffer = Buffer.concat(uploads[socketID].data);
         const fileName = socketID + '.' + data.ext;
 
-        // First, avatar image goes into open folder
-        fs.writeFile(PATH + fileName, fileBuffer, (error) => {
+        let retVal = { slice: 0, error: null };
+
+        try {
+            fs.writeFileSync(PATH + fileName, fileBuffer);
+        } catch (error) {
+            console.log(`ImageUploadSlice error: `, error);
+            retVal = { slice: -1, error };
+        } finally {
+            console.log(`Erasing upload object: ${socketID}`);
             delete uploads[socketID];
-            if(error) {
-                CB(-1);
-                return;
-            }
-            CB(0);
-            return;
-        });                    
+        }
+
+        return retVal;                  
     }
     else { 
-        CB(uploads[socketID].slice);
+        return { slice: uploads[socketID].slice, error: null };
     }
 };
 

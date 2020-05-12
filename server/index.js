@@ -37,14 +37,15 @@ io.on("connection", (socket) => {
     });
 
     socket.on('ImageUploadSlice', (data) => {
-        UploadImage(socket.id, data, (slice) => {
-            if(slice === -1)
-                socket.emit('ImageUploadError');
-            else if(slice === 0)
-                socket.emit('ImageUploadEnd'); 
-            else
-                socket.emit('ImageReqSlice', { currentSlice: slice });
-        });        
+        const { slice, error } = UploadImage(socket.id, data); 
+        
+        if(slice === -1) {
+            socket.emit('ImageUploadError', error);
+        }
+        else if(slice === 0)
+            socket.emit('ImageUploadEnd'); 
+        else
+            socket.emit('ImageReqSlice', { currentSlice: slice });
     });
 
     socket.on('SendMessage', ( data ) => {

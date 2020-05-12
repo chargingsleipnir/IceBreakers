@@ -62,7 +62,7 @@ class Chat extends Component {
                             disabled={!this.props.user_Chat_Active}
                         />
                         <button className="btn noBorder bg-white" onClick={(event) => this.SendMessage(event)} disabled={!this.props.user_Chat_Active}>
-                            <i class="fas fa-paper-plane fa-lg"></i>
+                            <i className="fas fa-paper-plane fa-lg"></i>
                         </button>
                     </form>
                 </div>

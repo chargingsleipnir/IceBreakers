@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import LoadBar from './LoadBar';
-import defaultImg from '../images/SpeechlessGuy.png';
 
 let URL = window.URL || window.webkitURL;
 const extArr = ['jpg', 'jpeg', 'png', 'gif'];
 
-const ImgUpload = ({ GetImgDetails, disabled, loadFile, percent }) => {
-    const [src, SetSrc] = useState(defaultImg);
+// TODO: Reset src to default guy on error
+// TODO: Reset file input to null value on error
+
+const ImgUpload = ({ GetImgDetails, imgSrc, disabled, willLoadFile, percent }) => {
 
     const imgChange = (event) => {
         // Make sure only 1 file has been uploaded
@@ -25,23 +26,21 @@ const ImgUpload = ({ GetImgDetails, disabled, loadFile, percent }) => {
         }
 
         let file = event.target.files[0];
-        //console.log(file);
 
         var img = new Image();
         img.onload = () => { console.log("img width: " + img.width + ", height: " + img.height); };
         img.src = URL.createObjectURL(file);
-        SetSrc(img.src);
 
-        GetImgDetails(ext, file, src);
+        GetImgDetails(ext, file, img.src);
     };
 
-    const html_LoadBar = loadFile ? <LoadBar percent={percent} /> : "";
+    const html_LoadBar = willLoadFile ? <LoadBar percent={percent} /> : "";
 
     //console.log(`Main body called in ImgUpload.js`);
 
     return (
         <div className="mt-2">
-            <img src={src} id="AvatarSelected" className="rounded-circle mt-5 mb-5" alt="User avatar" />
+            <img src={imgSrc} id="AvatarSelected" className="rounded-circle mt-5 mb-5" alt="User avatar" />
 
             <input id="HiddenFileUploader" placeholder="File" className="d-none" type="file" accept="image/*" capture="user" onChange={imgChange} disabled={disabled} />
             {/* Clicking this button activates the hidden file button above.  */}
@@ -49,11 +48,6 @@ const ImgUpload = ({ GetImgDetails, disabled, loadFile, percent }) => {
                 <span>Take/Upload picture</span>
                 { html_LoadBar }
             </button>
-            
-            {/* // TODO: Use mobile camera or webcam. - File uploader can act as both?
-            <input id="HiddenPhotoUploader" placeholder="Image" className="d-none" type="file" accept="image/*" capture="user" />
-            <div><button className="button mt-2" onClick={() => { document.getElementById("HiddenPhotoUploader").click(); }}>Take picture</button></div>  
-            */}
         </div>
     );
 };
