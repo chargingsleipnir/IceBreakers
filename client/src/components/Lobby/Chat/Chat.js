@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
+import ScrollToBottom from 'react-scroll-to-bottom';
 
 import InfoBar from './InfoBar';
-import Messages from './Messages';
+import Message from './Message';
 
 class Chat extends Component {
     //props: {socket, user_Chat, OnSendMessage ToPageUsers}
@@ -30,13 +31,29 @@ class Chat extends Component {
         //console.log(this.props.user_Chat.unreadMsg);
 
         return (
-            <div className="outerContainer">
-                <div className="container">
-                    <InfoBar ToPageUsers={this.props.ToPageUsers} user_Chat={this.props.user_Chat} user_Chat_Active={this.props.user_Chat_Active} />
-                    <Messages messages={this.props.user_Chat.messages} />
-                    <form className="form">
+            <div className="h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div className="mw1000 m-0Auto">
+                        <InfoBar ToPageUsers={this.props.ToPageUsers} user_Chat={this.props.user_Chat} user_Chat_Active={this.props.user_Chat_Active} />
+                    </div>
+                </div>
+                <div className="flex-grow-1 bg-secondary">
+                    <div className="mw1000 m-0Auto h-100 position-relative">
+                        <ScrollToBottom className="FullSpreadAbsElem" scrollViewClassName="pad10">
+                            { 
+                                this.props.user_Chat.messages.map((message, i) => 
+                                    <div className="innerScrollItem" key={i}>
+                                        <Message message={message} />
+                                    </div>
+                                ) 
+                            }
+                        </ScrollToBottom>
+                    </div>
+                </div>
+                <div className="bg-secondary">
+                    <form className="mw1000 m-0Auto d-flex align-items-stretch">
                         <input 
-                            className="input" 
+                            className="form-control form-control-lg flex-grow-1 noBorder" 
                             type="text" 
                             placeholder="message" 
                             value={this.props.user_Chat_Active ? this.state.msgText : ""} 
@@ -44,8 +61,8 @@ class Chat extends Component {
                             onKeyPress={event => event.key === "Enter" ? this.SendMessage(event) : null}
                             disabled={!this.props.user_Chat_Active}
                         />
-                        <button className="sendButton" onClick={(event) => this.SendMessage(event)} disabled={!this.props.user_Chat_Active}>
-                            <i class="fas fa-paper-plane"></i>
+                        <button className="btn noBorder bg-white" onClick={(event) => this.SendMessage(event)} disabled={!this.props.user_Chat_Active}>
+                            <i class="fas fa-paper-plane fa-lg"></i>
                         </button>
                     </form>
                 </div>

@@ -7,18 +7,16 @@ const Message = ({ message: { msgText, fromSender } }) => {
 
     return (
         fromSender ? (
-            <div className="messageContainer justifyEnd">
-                {/*<p className="sentText pr-10">{my name}</p>*/}
-                <div className="messageBox backgroundBlue">
-                    <p className="messageText colorWhite">{ReactEmoji.emojify(msgText)}</p>
+            <div className="d-flex justify-content-end mt-3">
+                <div className="messageBox bgLightBlue fromSelf">
+                    <div className="messageText text-white">{ReactEmoji.emojify(msgText)}</div>
                 </div>
             </div>
         ) : (
-            <div className="messageContainer justifyStart">
-                <div className="messageBox backgroundLight">
-                    <p className="messageText colorDark">{ReactEmoji.emojify(msgText)}</p>
+            <div className="d-flex justify-content-start mt-3">
+                <div className="messageBox bg-white fromOther">
+                    <div className="messageText">{ReactEmoji.emojify(msgText)}</div>
                 </div>
-                {/*<p className="sentText pl-10">{their name}</p>*/}
             </div>
         )
     )
