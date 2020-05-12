@@ -61,6 +61,8 @@ io.on("connection", (socket) => {
 });
 
 // ROUTES -----
+app.use(express.static(__dirname + '/Client'));
+
 const router = require('./router');
 app.use(router);
 app.use(cors());
