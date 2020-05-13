@@ -28,11 +28,15 @@ html, body, #root {
     size: 1em;
 }
 
-img#AvatarSelected {
+#AvatarSelected {
     width: 70vw;
     height: 70vw;
     max-width: 256px;
     max-height: 256px;
+    overflow: hidden;
+}
+#AvatarSelected > img {
+    width: 100%;
     object-fit: cover;
 }
 

@@ -40,7 +40,10 @@ const ImgUpload = ({ GetImgDetails, imgSrc, disabled, willLoadFile, percent }) =
 
     return (
         <div className="mt-2">
-            <img src={imgSrc} id="AvatarSelected" className="img-fluid rounded-circle mt-1 mb-1 mt-md-3 mb-md-3 mt-lg-5 mb-lg-5" alt="User avatar" />
+            {/* Container exists so that the image can keep it's aspect ratio and just can cut-off/masked by the container */}
+            <div id="AvatarSelected" className="rounded-circle mt-1 mb-1 mt-md-3 mb-md-3 mt-lg-5 mb-lg-5">
+                <img src={imgSrc} alt="User avatar" />
+            </div>
 
             <input id="HiddenFileUploader" placeholder="File" className="d-none" type="file" accept="image/*" capture="user" onChange={imgChange} disabled={disabled} />
             {/* Clicking this button activates the hidden file button above.  */}
