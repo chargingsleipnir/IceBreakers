@@ -10,7 +10,7 @@ import defaultImg from '../images/SpeechlessGuy.png';
 let socket;
 
 // TAG (build): Remove "ENDPOINT" on build/deployment
-socket = io(ENDPOINT);
+socket = io();
 
 class Join extends Component {
 
