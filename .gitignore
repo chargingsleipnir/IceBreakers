@@ -5,5 +5,5 @@
 *.code-workspace
 
 # Builds
-./server/Client
-./client/build
+/server/Client
+/client/build
