@@ -3,7 +3,9 @@ import defaultImg from '../../images/SpeechlessGuy.png';
 
 const UserIdent = ({ name, imgSrc }) => (
     <div className="d-flex align-items-center">
-        <img src={imgSrc || defaultImg} className="avatarsUserIdent rounded-circle" alt="User Avatar" />
+        <div className="avatarsUserIdent rounded-circle">
+            <img src={imgSrc || defaultImg} alt="User Avatar" />
+        </div>
         <div className="ml-3">{name}</div>
     </div>
 );
