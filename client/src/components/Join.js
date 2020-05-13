@@ -10,7 +10,7 @@ import defaultImg from '../images/SpeechlessGuy.png';
 let socket;
 
 // TAG (build): Remove "ENDPOINT" on build/deployment
-socket = io();
+socket = io(ENDPOINT);
 
 class Join extends Component {
 
@@ -128,7 +128,7 @@ class Join extends Component {
                         <div>
                             <h1 className="text-center text-white">Welcome</h1>
                             <hr className="bg-light mt-1 mb-2 mt-md-2 mb-md-3 mt-lg-3 mb-lg-4" />
-                            <input type="text" className="form-control form-control-lg" placeholder="Name" ref={this.nameField} disabled={this.state.disabled} />
+                            <input type="text" className="form-control form-control-lg" placeholder="Name" ref={this.nameField} onKeyPress={event => event.key === "Enter" ? event.target.blur() : null} disabled={this.state.disabled} />
                         </div>
 
                         <div>
