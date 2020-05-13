@@ -24,11 +24,7 @@ class Chat extends Component {
         }
     };
 
-    //console.log(`Main body called in Chat.js`);
-
     render() {
-
-        //console.log(this.props.user_Chat.unreadMsg);
 
         return (
             <div className="h-100 d-flex flex-column justify-content-between">
