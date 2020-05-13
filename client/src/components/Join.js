@@ -127,7 +127,7 @@ class Join extends Component {
                     <div className="container-fluid h-100 d-flex flex-column justify-content-center align-items-center">
                         <div>
                             <h1 className="text-center text-white">Welcome</h1>
-                            <hr className="bg-light" />
+                            <hr className="bg-light mt-1 mb-2 mt-md-2 mb-md-3 mt-lg-3 mb-lg-4" />
                             <input type="text" className="form-control form-control-lg" placeholder="Name" ref={this.nameField} disabled={this.state.disabled} />
                         </div>
 
