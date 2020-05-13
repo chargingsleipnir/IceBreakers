@@ -3,3 +3,7 @@
 # Editor
 /.vscode
 *.code-workspace
+
+# Builds
+./server/Client
+./client/build
