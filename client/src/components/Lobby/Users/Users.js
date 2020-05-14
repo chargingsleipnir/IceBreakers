@@ -4,7 +4,7 @@ import ScrollToBottom from 'react-scroll-to-bottom';
 
 const Users = ({ users, LikeUserToggle, ToPageChat }) => (
     <div className="h-100 w-100 d-flex flex-column">
-        <h1 className="text-center text-white">Users</h1>
+        <div className="head1 text-center text-white">Users</div>
         <ul className="list-group bg-secondary p-2 flex-grow-1 position-relative">
             <ScrollToBottom className="FullSpreadAbsElem" scrollViewClassName="pad10">
                 { 

@@ -126,7 +126,7 @@ class Join extends Component {
                 <div className="position-relative h-100">
                     <div className="container-fluid h-100 d-flex flex-column justify-content-center align-items-center">
                         <div>
-                            <h1 className="text-center text-white">Welcome</h1>
+                            <div className="head1 text-center text-white">Welcome</div>
                             <hr className="bg-light mt-1 mb-2 mt-md-2 mb-md-3 mt-lg-3 mb-lg-4" />
                             <input type="text" className="form-control form-control-lg" placeholder="Name" ref={this.nameField} onKeyPress={event => event.key === "Enter" ? event.target.blur() : null} disabled={this.state.disabled} />
                         </div>

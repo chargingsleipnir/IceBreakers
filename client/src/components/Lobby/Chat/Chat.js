@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ScrollToBottom from 'react-scroll-to-bottom';
 import ChooseIceBreaker from './IceBreakerSelection';
 
-import InfoBar from './InfoBar';
+import UserInfoBar from './UserInfoBar';
 import Message from './Message';
 
 class Chat extends Component {
@@ -48,11 +48,7 @@ class Chat extends Component {
         else {
             return (
                 <div className="h-100 d-flex flex-column justify-content-between">
-                    <div>
-                        <div className="maxW1000 m-0Auto">
-                            <InfoBar ToPageUsers={this.props.ToPageUsers} user_Chat={this.props.user_Chat} user_Chat_Active={this.props.user_Chat_Active} />
-                        </div>
-                    </div>
+                    <UserInfoBar ToPageUsers={this.props.ToPageUsers} user_Chat={this.props.user_Chat} user_Chat_Active={this.props.user_Chat_Active} />
                     <div className="flex-grow-1 bg-secondary">
                         <div className="maxW1000 m-0Auto h-100 position-relative">
                             <ScrollToBottom className="FullSpreadAbsElem" scrollViewClassName="pad10">
@@ -68,7 +64,7 @@ class Chat extends Component {
                     </div>
                     <div className="bg-secondary">
                         <form className="maxW1000 m-0Auto d-flex align-items-stretch p-2">
-                            <button className="btn noBorder bg-white mr-2" onClick={(event) => this.ChooseIceBreaker(event)} disabled={!this.props.user_Chat_Active}>
+                            <button className="btn noBorder bgLightBlue text-white mr-2" onClick={(event) => this.ChooseIceBreaker(event)} disabled={!this.props.user_Chat_Active}>
                                 <i className="fas fa-handshake fa-lg"></i>
                             </button>
                             <input 
