@@ -9,7 +9,7 @@ const Users = ({ users, LikeUserToggle, ToPageChat }) => (
             <ScrollToBottom className="FullSpreadAbsElem" scrollViewClassName="pad10">
                 { 
                     users.map((user, i) => 
-                        <li className="list-group-item m-0Auto mw1000 innerScrollItem" key={i} >
+                        <li className="list-group-item m-0Auto maxW1000 innerScrollItem" key={i} >
                             <User user={user} LikeUserToggle={LikeUserToggle} ToPageChat={ToPageChat} />
                         </li>
                     )

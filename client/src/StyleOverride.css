@@ -52,16 +52,20 @@ html, body, #root {
     background-color: transparent;
 }
 
-.mw1000 {
+.maxW1000 {
     max-width: 1000px;
 }
 
-.mw1000 {
+.maxW1000 {
     max-width: 1000px;
 }
 
 .mw80pct {
     max-width: 80%;
+}
+
+.minW50pct {
+    min-width: 50%;
 }
 
 .m-0Auto {

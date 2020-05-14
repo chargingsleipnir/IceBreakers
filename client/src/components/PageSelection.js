@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { pages } from '../Consts';
 import Users from './Lobby/Users/Users';
 import Chat from './Lobby/Chat/Chat';
-import ChooseIceBreaker from './Lobby/IceBreakerSelection';
 
 class PageSelection extends Component {
 
@@ -104,6 +103,7 @@ class PageSelection extends Component {
         if(this.state.page === pages.USERS)
             return ( <Users users={this.state.users} LikeUserToggle={this.LikeUserToggle} ToPageChat={this.ToPageChat} /> );
         else if(this.state.page === pages.CHAT) {
+            // Re-render if the user goes offline while being chatted with.
             let user_Chat_Active = true;
             if(this.state.user_Chat)
                 if(this.state.users.findIndex(({ id }) => id === this.state.user_Chat.id) === -1)
@@ -111,8 +111,6 @@ class PageSelection extends Component {
 
             return ( <Chat socket={this.props.socket} user_Chat={this.state.user_Chat} user_Chat_Active={user_Chat_Active} OnSendMessage={this.OnSendMessage} ToPageUsers={this.ToPageUsers} /> );
         }
-        else if(this.state.page === pages.CHOOSE_ICEBREAKER)
-            return ( <ChooseIceBreaker /> );
     }
 };
 
