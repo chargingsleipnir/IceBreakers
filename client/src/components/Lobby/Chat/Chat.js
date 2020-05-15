@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ScrollToBottom from 'react-scroll-to-bottom';
-import ChooseIceBreaker from './IceBreakerSelection';
+import IceBreakerSelection from './IceBreakerSelection';
 
 import UserInfoBar from './UserInfoBar';
 import Message from './Message';
@@ -43,7 +43,7 @@ class Chat extends Component {
 
     render() {
         if(this.state.preppingIceBreaker) {
-            return ( <ChooseIceBreaker ReturnToChat={this.ReturnToChat} user_Chat_Active={this.props.user_Chat_Active} /> );
+            return ( <IceBreakerSelection ReturnToChat={this.ReturnToChat} user_Chat_Active={this.props.user_Chat_Active} /> );
         }
         else {
             return (

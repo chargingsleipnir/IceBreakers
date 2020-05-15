@@ -8,7 +8,7 @@ const UserInfoBar = ({ ToPageUsers, user_Chat, user_Chat_Active }) => (
                 <button onClick={ToPageUsers} className="btn ml-2 text-white">
                     <i className="fas fa-arrow-left fa-lg"></i>
                 </button>
-                <div className="ml-2 fontSize150"><UserIdent name={user_Chat.name + (user_Chat_Active ? "" : " [account deleted]")} imgSrc={user_Chat.imgSrc} /></div>
+                <div className="ml-2 fontSize150"><UserIdent name={user_Chat.name} online={user_Chat_Active} imgSrc={user_Chat.imgSrc} /></div>
             </div>
         </div>
     </div>

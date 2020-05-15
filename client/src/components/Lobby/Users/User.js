@@ -12,7 +12,7 @@ const User = ({user, LikeUserToggle, ToPageChat}) => {
 
     return (
         <div className="d-flex flex-wrap justify-content-between align-items-center">
-            <UserIdent name={user.name} imgSrc={user.imgSrc} />
+            <UserIdent name={user.name} online={true} imgSrc={user.imgSrc} />
             <div className="d-flex align-items-center">
                 <button className="btn pl-1 pr-1 pl-sm-2 pr-sm-2 pl-md-3 pr-md-3" onClick={() => { LikeUserToggle(user.id, !user.likeThem); }}>
                     { html_likeBtnVisual }

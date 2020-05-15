@@ -5,7 +5,7 @@ import PageTitleBar from './PageTitleBar';
 import IBFight from './IceBreakers/IB_Fight';
 import IBTrap from './IceBreakers/IB_Trap';
 
-class ChooseIceBreaker extends Component {
+class IceBreakerSelection extends Component {
 
     state = {
         iceBreaker: iceBreakers.NONE
@@ -24,9 +24,10 @@ class ChooseIceBreaker extends Component {
 
     render() {
         if(this.state.iceBreaker === iceBreakers.NONE) {
+
             return (
                 <div className="h-100 w-100 d-flex flex-column">
-                    <PageTitleBar BackFunc={this.props.ReturnToChat} title='Ice Breakers' />
+                    <PageTitleBar BackFunc={this.props.ReturnToChat} title="Ice Breakers" subtitle={this.props.user_Chat_Active ? "" : " [user offline]"} />
                     <div className="bg-secondary p-2 flex-grow-1 position-relative" role="group">
                         <ScrollToBottom className="FullSpreadAbsElem" scrollViewClassName="d-flex flex-column pad10">
                             {/* FIGHT */}
@@ -55,12 +56,12 @@ class ChooseIceBreaker extends Component {
             );
         }
         else if(this.state.iceBreaker === iceBreakers.FIGHT) {
-            return ( <IBFight ReturnToSelection={this.ReturnToSelection} /> );
+            return ( <IBFight ReturnToSelection={this.ReturnToSelection} user_Chat_Active={this.props.user_Chat_Active} /> );
         }
         else if(this.state.iceBreaker === iceBreakers.TRAP) {
-            return ( <IBTrap ReturnToSelection={this.ReturnToSelection} /> );
+            return ( <IBTrap ReturnToSelection={this.ReturnToSelection} user_Chat_Active={this.props.user_Chat_Active} /> );
         }
     }
 };
 
-export default ChooseIceBreaker;
+export default IceBreakerSelection;
