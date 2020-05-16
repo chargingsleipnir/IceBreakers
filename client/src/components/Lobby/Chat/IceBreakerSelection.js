@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import ScrollToBottom from 'react-scroll-to-bottom';
-import { iceBreakers } from '../../../Consts';
+import Consts from '../../../Consts';
 import PageTitleBar from './PageTitleBar';
-import IBFight from './IceBreakers/IB_Fight';
-import IBTrap from './IceBreakers/IB_Trap';
+import IBFightSetup from './IceBreakers/Setup/IB_Fight';
+import IBTrapSetup from './IceBreakers/Setup/IB_Trap';
 
 class IceBreakerSelection extends Component {
 
     state = {
-        iceBreaker: iceBreakers.NONE
+        iceBreaker: Consts.iceBreakers.NONE
     }
 
-    // props: user_Chat_Active
+    // props: ReturnToChat, user_Chat_Active, LaunchIceBreaker, socket, user_Chat_ID
     constructor(props) {
         super(props);
 
@@ -19,11 +19,11 @@ class IceBreakerSelection extends Component {
     }
 
     ReturnToSelection() {
-        this.setState({ iceBreaker: iceBreakers.NONE });
+        this.setState({ iceBreaker: Consts.iceBreakers.NONE });
     }
 
     render() {
-        if(this.state.iceBreaker === iceBreakers.NONE) {
+        if(this.state.iceBreaker === Consts.iceBreakers.NONE) {
 
             return (
                 <div className="h-100 w-100 d-flex flex-column">
@@ -34,7 +34,7 @@ class IceBreakerSelection extends Component {
                             <button 
                                 type="button"
                                 className="btn btn-lg bgLightBlue text-white m-0Auto minW50pct maxW1000 innerScrollItem"
-                                onClick={(event) => this.setState({ iceBreaker: iceBreakers.FIGHT })}
+                                onClick={() => this.setState({ iceBreaker: Consts.iceBreakers.FIGHT })}
                                 disabled={!this.props.user_Chat_Active}
                             >
                                 <i className="fas fa-fist-raised fa-lg transFlipYRot90"></i>
@@ -44,7 +44,7 @@ class IceBreakerSelection extends Component {
                             <button
                                 type="button"
                                 className="btn btn-lg bgLightBlue text-white m-0Auto mt-2 minW50pct maxW1000 innerScrollItem"
-                                onClick={(event) => this.setState({ iceBreaker: iceBreakers.TRAP })}
+                                onClick={() => this.setState({ iceBreaker: Consts.iceBreakers.TRAP })}
                                 disabled={!this.props.user_Chat_Active}
                             >
                                 <i className="fas fa-dungeon fa-lg"></i>
@@ -55,11 +55,23 @@ class IceBreakerSelection extends Component {
                 </div>
             );
         }
-        else if(this.state.iceBreaker === iceBreakers.FIGHT) {
-            return ( <IBFight ReturnToSelection={this.ReturnToSelection} user_Chat_Active={this.props.user_Chat_Active} /> );
+        else if(this.state.iceBreaker === Consts.iceBreakers.FIGHT) {
+            return (<IBFightSetup 
+                ReturnToSelection={this.ReturnToSelection} 
+                user_Chat_Active={this.props.user_Chat_Active} 
+                LaunchIceBreaker={this.props.LaunchIceBreaker} 
+                socket={this.props.socket} 
+                user_Chat_ID={this.props.user_Chat_ID} 
+            />);
         }
-        else if(this.state.iceBreaker === iceBreakers.TRAP) {
-            return ( <IBTrap ReturnToSelection={this.ReturnToSelection} user_Chat_Active={this.props.user_Chat_Active} /> );
+        else if(this.state.iceBreaker === Consts.iceBreakers.TRAP) {
+            return (<IBTrapSetup 
+                ReturnToSelection={this.ReturnToSelection} 
+                user_Chat_Active={this.props.user_Chat_Active} 
+                LaunchIceBreaker={this.props.LaunchIceBreaker} 
+                socket={this.props.socket} 
+                user_Chat_ID={this.props.user_Chat_ID}
+            /> );
         }
     }
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import PageTitleBar from '../PageTitleBar';
+import PageTitleBar from '../../PageTitleBar';
 
 const IBTrap = ({ ReturnToSelection }) => (
     <div className="h-100 w-100 d-flex flex-column">

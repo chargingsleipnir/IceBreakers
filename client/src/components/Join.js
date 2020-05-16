@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import io from 'socket.io-client';
-import { ENDPOINT, SLICE_SIZE } from '../Consts';
+import Consts from '../Consts';
 
 import PageSelection from './PageSelection';
 import ImgUpload from './ImgUpload';
@@ -10,7 +10,7 @@ import defaultImg from '../images/SpeechlessGuy.png';
 let socket;
 
 // TAG (build): Remove "ENDPOINT" on build/deployment
-socket = io(ENDPOINT);
+socket = io(Consts.ENDPOINT);
 
 class Join extends Component {
 
@@ -32,8 +32,8 @@ class Join extends Component {
         this.fileReader = null;
 
         socket.on('ImageReqSlice', (resObj) => {
-            let place = resObj.currentSlice * SLICE_SIZE;
-            this.slice = this.state.file.slice(place, place + Math.min(SLICE_SIZE, this.state.file.size - place)); 
+            let place = resObj.currentSlice * Consts.SLICE_SIZE;
+            this.slice = this.state.file.slice(place, place + Math.min(Consts.SLICE_SIZE, this.state.file.size - place)); 
 
             const percent = (place / this.state.file.size) * 100;
             this.setState({ percent });
@@ -96,7 +96,7 @@ class Join extends Component {
         }
         else {
             // Start image upload, adding user officially at the end.
-            this.slice = this.state.file.slice(0, SLICE_SIZE);
+            this.slice = this.state.file.slice(0, Consts.SLICE_SIZE);
             this.fileReader = new FileReader();
             this.fileReader.onload = (event) => {
                 socket.emit('ImageUploadSlice', { ext: this.fileExt, name, type: this.state.file.type, size: this.state.file.size, data: event.target.result });

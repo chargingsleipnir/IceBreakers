@@ -1,5 +1,5 @@
 var fs = require('fs');
-const { PATH, SLICE_SIZE } = require('./consts.js');
+var Consts = require('./Shared/Consts.js');
 
 // Container for any/all images being uploaded at one time.
 var uploads = {};
@@ -17,14 +17,14 @@ const UploadImage = (socketID, data) => {
     uploads[socketID].slice++;
 
     // Upload complete
-    if(uploads[socketID].slice * SLICE_SIZE >= uploads[socketID].size) { 
+    if(uploads[socketID].slice * Consts.SLICE_SIZE >= uploads[socketID].size) { 
         const fileBuffer = Buffer.concat(uploads[socketID].data);
         const fileName = socketID + '.' + data.ext;
 
         let retVal = { slice: 0, error: null };
 
         try {
-            fs.writeFileSync(PATH + fileName, fileBuffer);
+            fs.writeFileSync(Consts.PATH + fileName, fileBuffer);
         } catch (error) {
             console.log(`ImageUploadSlice error: `, error);
             retVal = { slice: -1, error };
@@ -42,12 +42,12 @@ const UploadImage = (socketID, data) => {
 
 const GetImage = (socketID, imgExt) => {
     const fileName = socketID + '.' + imgExt;
-    let data = fs.readFileSync(PATH + fileName);
+    let data = fs.readFileSync(Consts.PATH + fileName);
     return "data:image/" + imgExt + ";base64,"+ data.toString("base64");
 };
 
 const RemoveImage = (fileName) => {
-    fs.unlink(PATH + fileName, (err) => {
+    fs.unlink(Consts.PATH + fileName, (err) => {
         if(err)
             console.log(err);
     });
