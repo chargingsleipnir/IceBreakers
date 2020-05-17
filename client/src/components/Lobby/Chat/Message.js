@@ -5,7 +5,7 @@ import Consts from '../../../Consts';
 const Message = ({ message: { type, data, chatPtnrID, fromSelf } }) => {
 
     if(type === Consts.msgTypes.TEXT) {
-        console.log(`Message created. From self: ${fromSelf}, msg text: "${data}"`);
+        //console.log(`Message created. From self: ${fromSelf}, msg text: "${data}"`);
 
         return (
             fromSelf ? (
@@ -34,7 +34,7 @@ const Message = ({ message: { type, data, chatPtnrID, fromSelf } }) => {
     // },
 
     else if(type === Consts.msgTypes.CE_FIGHT) {
-        console.log(`Message created. From self: ${fromSelf}, provocation text: "${data.msgProvoke}"`);
+        //console.log(`Message created. From self: ${fromSelf}, provocation text: "${data.msgProvoke}"`);
 
         return (
             fromSelf ? (

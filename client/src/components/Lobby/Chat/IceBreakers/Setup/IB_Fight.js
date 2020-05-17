@@ -6,7 +6,7 @@ import imgPunch from '../../../../../images/Punch_02_32x32.png';
 import imgTackle from '../../../../../images/Tackle_01_32x32.png';
 import imgKick from '../../../../../images/Kick_02_32x32.png';
 
-const IBFight = ({ ReturnToSelection, user_Chat_Active, LaunchIceBreaker, socket, user_Chat_ID }) => {
+const IBFight = ({ ReturnToSelection, user_Chat_Active, LaunchChatEvent, user_Chat_ID }) => {
 
     var elem_Form = React.createRef();
     var elem_ProvokeMsg = React.createRef();
@@ -52,19 +52,16 @@ const IBFight = ({ ReturnToSelection, user_Chat_Active, LaunchIceBreaker, socket
         }
 
         // TODO: Validate inputs? LOW PRIORITY
-        // { type: Consts.msgTypes.TEXT, data: this.state.msgText, chatPtnrID: this.props.user_Chat.id }
-        if(LaunchIceBreaker()) {
-            socket.emit('CommenceFight', { 
-                type: Consts.msgTypes.CE_FIGHT,
-                data: {
-                    msgProvoke: elem_ProvokeMsg.current.value,
-                    msgWin: elem_WinMsg.current.value,
-                    msgLose: elem_LoseMsg.current.value,
-                    moves
-                },
-                chatPtnrID: user_Chat_ID                
-            });
-        }
+        LaunchChatEvent({ 
+            type: Consts.msgTypes.CE_FIGHT,
+            data: {
+                msgProvoke: elem_ProvokeMsg.current.value,
+                msgWin: elem_WinMsg.current.value,
+                msgLose: elem_LoseMsg.current.value,
+                moves
+            },
+            chatPtnrID: user_Chat_ID                
+        });
     };
 
     return (

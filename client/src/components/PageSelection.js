@@ -73,8 +73,8 @@ class PageSelection extends Component {
         this.ToPageUsers = this.ToPageUsers.bind(this);
         this.LikeUserToggle = this.LikeUserToggle.bind(this);
         this.ToPageChat = this.ToPageChat.bind(this);
-        this.OnSendMessage = this.OnSendMessage.bind(this);
-        this.OnSendEvent = this.OnSendEvent.bind(this);
+        this.SendMessage = this.SendMessage.bind(this);
+        this.SetUserEventEngaged = this.SetUserEventEngaged.bind(this);
         this.UpdatetUser = this.UpdatetUser.bind(this);
     }
 
@@ -110,22 +110,28 @@ class PageSelection extends Component {
     }
 
     // Update my own message view, not required from server
-    OnSendMessage (dataObj) {
-        //console.log(`Sent message: "${msgText}" to user: "${this.state.user_Chat.id}"`);
-        let changeIndex = this.state.users.findIndex(({ id }) => id === this.state.user_Chat.id);
-        this.state.users[changeIndex].messages.push({ ...dataObj, fromSelf: true });
-        this.setState({ users: this.state.users });
-    }
+    SendMessage (dataObj, eventEngaged) {
+        this.props.socket.emit('SendMessage', dataObj);
 
-    // TODO: Update my own message view with indication of event being sent, not required for receiver.
-    OnSendEvent () {
-        this.setState(prevState => ({ 
-            users: prevState.users.map((elem) => elem.id === this.state.user_Chat.id ? {...elem, eventEngaged: true } : elem),
-            user_Chat: { ...prevState.user_Chat, eventEngaged: true }
-        }));
+        // let changeIndex = this.state.users.findIndex(({ id }) => id === this.state.user_Chat.id);
+        // this.state.users[changeIndex].messages.push({ ...dataObj, fromSelf: true });
+        // this.setState({ users: this.state.users });
+
+        this.setState((prevState) => { 
+            
+            let changeIndex = prevState.users.findIndex(({ id }) => id === prevState.user_Chat.id);
+            prevState.users[changeIndex].messages.push({ ...dataObj, fromSelf: true });
+            prevState.users[changeIndex].eventEngaged = eventEngaged;
+
+            return {
+                users: prevState.users,
+                user_Chat: { ...prevState.user_Chat, eventEngaged: eventEngaged }
+            } 
+        });
     }
 
     render() {
+        console.log(this.state);
         if(this.state.page === Consts.pages.USERS)
             return ( <Users users={this.state.users} LikeUserToggle={this.LikeUserToggle} ToPageChat={this.ToPageChat} /> );
         else if(this.state.page === Consts.pages.CHAT) {
@@ -139,8 +145,8 @@ class PageSelection extends Component {
                 socket={this.props.socket}
                 user_Chat={this.state.user_Chat}
                 user_Chat_Active={user_Chat_Active}
-                OnSendMessage={this.OnSendMessage}
-                OnSendEvent={this.OnSendEvent}
+                SendMessage={this.SendMessage}
+                SetUserEventEngaged={this.SetUserEventEngaged}
                 UpdatetUser={this.UpdatetUser}
                 ToPageUsers={this.ToPageUsers} 
             />);

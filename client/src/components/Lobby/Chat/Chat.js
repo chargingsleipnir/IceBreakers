@@ -14,49 +14,53 @@ class Chat extends Component {
 
     state = {  
         msgText: "",
-        preppingChatEvent: false,
-        activeChatEvent: Consts.iceBreakers.NONE
+        preppingChatEvent: false
     };
 
-    //props: {socket, user_Chat, user_Chat_Active, OnSendMessage, OnSendEvent, UpdatetUser, ToPageUsers}
+    //props: {socket, user_Chat, user_Chat_Active, SendMessage, SetUserEventEngaged, UpdatetUser, ToPageUsers}
     constructor(props) {
         super(props);
 
+        this.SendText = this.SendText.bind(this);
+        this.LaunchChatEvent = this.LaunchChatEvent.bind(this);
+        this.ChooseIceBreaker = this.ChooseIceBreaker.bind(this);
         this.ReturnToChat = this.ReturnToChat.bind(this);
-        this.LaunchIceBreaker = this.LaunchIceBreaker.bind(this);
     }
 
-    SendMessage (event) {
+    // Specific to this class, wherin it resets the msgText
+    SendText (event) {
         event.preventDefault();
+        if(!this.state.msgText) {
+            console.warn("Message not sent, must send more than nothing.");
+            return;
+        }
+        if(!this.props.user_Chat_Active) {
+            console.warn("Message not sent, that user has been removed from the server.");
+            return;
+        }
 
         console.log(`SendMessage called in Chat.js, msgText: "${this.state.msgText}" to user: "${this.props.user_Chat.id}"`);
 
-        if(this.state.msgText) {
-            if(!this.props.user_Chat_Active) {
-                console.warn("Message not sent, that user has been removed from the server.");
-                return;
-            }
-
-            const dataObj = { type: Consts.msgTypes.TEXT, data: this.state.msgText, chatPtnrID: this.props.user_Chat.id };
-            this.props.socket.emit('SendMessage', dataObj);
-            this.props.OnSendMessage(dataObj);
-            this.setState({ msgText: '' });
-        }
+        this.setState({ msgText: '' });
+        this.props.SendMessage({ 
+            type: Consts.msgTypes.TEXT, 
+            data: this.state.msgText, 
+            chatPtnrID: this.props.user_Chat.id
+        }, false);
     };
 
-    // Prevent chat until it's fully played out
+    // Specific to chat events, wherin the age returns here once they are sent, and chat with this user is disabled until the event is complete.
     // TODO: Long-term: Can cancel event if it has not yet begun by recipient.
-    
-    LaunchIceBreaker() {
+    LaunchChatEvent(dataObj) {
         if(!this.props.user_Chat_Active) {
-            console.warn("Event not sent, that user has been removed from the server.");
-            return false;
+            console.warn("Message not sent, that user has been removed from the server.");
+            return;
         }
-
-        this.props.OnSendEvent();
+        
         this.setState({ preppingChatEvent: false });
 
-        return true;
+        // passing true prevents any further chat with this user until it's fully played out
+        this.props.SendMessage(dataObj, true);
     }
 
     ChooseIceBreaker (event) {
@@ -72,8 +76,7 @@ class Chat extends Component {
             return (<IceBreakerSelection 
                 ReturnToChat={this.ReturnToChat} 
                 user_Chat_Active={this.props.user_Chat_Active} 
-                LaunchIceBreaker={this.LaunchIceBreaker} 
-                socket={this.props.socket} 
+                LaunchChatEvent={this.LaunchChatEvent} 
                 user_Chat_ID={this.props.user_Chat.id} 
             />);
         }
@@ -100,7 +103,7 @@ class Chat extends Component {
                     </div>
                     <div className="bg-secondary">
                         <form className="maxW1000 m-0Auto d-flex align-items-stretch p-2">
-                            <button className="btn noBorder bgLightBlue text-white mr-2" onClick={(event) => this.ChooseIceBreaker(event)} disabled={disabled}>
+                            <button className="btn noBorder bgLightBlue text-white mr-2" onClick={this.ChooseIceBreaker} disabled={disabled}>
                                 <i className="fas fa-handshake fa-lg"></i>
                             </button>
                             <input 
@@ -109,10 +112,10 @@ class Chat extends Component {
                                 placeholder="message" 
                                 value={this.props.user_Chat_Active ? this.state.msgText : ""} 
                                 onChange={(event) => this.setState({ msgText: event.target.value })} 
-                                onKeyPress={event => event.key === "Enter" ? this.SendMessage(event) : null}
+                                onKeyPress={event => event.key === "Enter" ? this.SendText(event) : null}
                                 disabled={disabled}
                             />
-                            <button className="btn noBorder bg-white" onClick={(event) => this.SendMessage(event)} disabled={disabled}>
+                            <button className="btn noBorder bg-white" onClick={this.SendText} disabled={disabled}>
                                 <i className="fas fa-paper-plane fa-lg"></i>
                             </button>
                         </form>

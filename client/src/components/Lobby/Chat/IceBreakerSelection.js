@@ -11,7 +11,7 @@ class IceBreakerSelection extends Component {
         iceBreaker: Consts.iceBreakers.NONE
     }
 
-    // props: ReturnToChat, user_Chat_Active, LaunchIceBreaker, socket, user_Chat_ID
+    // props: ReturnToChat, user_Chat_Active, LaunchChatEvent, user_Chat_ID
     constructor(props) {
         super(props);
 
@@ -59,8 +59,7 @@ class IceBreakerSelection extends Component {
             return (<IBFightSetup 
                 ReturnToSelection={this.ReturnToSelection} 
                 user_Chat_Active={this.props.user_Chat_Active} 
-                LaunchIceBreaker={this.props.LaunchIceBreaker} 
-                socket={this.props.socket} 
+                LaunchChatEvent={this.props.LaunchChatEvent}  
                 user_Chat_ID={this.props.user_Chat_ID} 
             />);
         }
@@ -68,8 +67,7 @@ class IceBreakerSelection extends Component {
             return (<IBTrapSetup 
                 ReturnToSelection={this.ReturnToSelection} 
                 user_Chat_Active={this.props.user_Chat_Active} 
-                LaunchIceBreaker={this.props.LaunchIceBreaker} 
-                socket={this.props.socket} 
+                LaunchChatEvent={this.props.LaunchChatEvent}  
                 user_Chat_ID={this.props.user_Chat_ID}
             /> );
         }

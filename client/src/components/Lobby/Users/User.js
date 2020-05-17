@@ -1,14 +1,23 @@
 import React from 'react';
 import UserIdent from '../UserIdent';
+import Consts from '../../../Consts';
 
 const User = ({user, LikeUserToggle, ToPageChat}) => {
 
     let html_likeBtnVisual = user.likeThem ? <i className="fas fa-heart fa-lg"></i> : <i className="far fa-heart fa-lg"></i>;
 
     const mutual = user.likeThem && user.likesMe;
-    const  html_SpeechBtnVisual = mutual ? <i className="fas fa-comment fa-lg fa-fw"></i> : <i className="fas fa-comment-slash fa-lg fa-fw"></i>;
+    const html_SpeechBtnVisual = mutual ? <i className="fas fa-comment fa-lg fa-fw"></i> : <i className="fas fa-comment-slash fa-lg fa-fw"></i>;
 
-    const html_UnreadMsgNotif = user.unreadMsg ? <span className="notificationBadge"></span> : "";
+    var html_UnreadMsgNotif = "";
+    if(user.unreadMsg) {
+        // Set different coloured notification if the last message is an event
+        let classes = "notificationBadge"
+        if(user.messages[user.messages.length - 1].type !== Consts.msgTypes.TEXT)
+            classes += " isEvent"
+
+        html_UnreadMsgNotif = <span className={classes}></span>
+    }
 
     return (
         <div className="d-flex flex-wrap justify-content-between align-items-center">
