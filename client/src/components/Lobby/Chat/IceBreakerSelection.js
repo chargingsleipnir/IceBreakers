@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import ScrollToBottom from 'react-scroll-to-bottom';
 import Consts from '../../../Consts';
 import PageTitleBar from './PageTitleBar';
-import IBFightSetup from './IceBreakers/Setup/IB_Fight';
-import IBTrapSetup from './IceBreakers/Setup/IB_Trap';
+import IBFightSetup from './IceBreakers/Fight/Setup';
+import IBTrapSetup from './IceBreakers/Trap/Setup';
 
 class IceBreakerSelection extends Component {
 
@@ -11,7 +11,7 @@ class IceBreakerSelection extends Component {
         iceBreaker: Consts.iceBreakers.NONE
     }
 
-    // props: ReturnToChat, user_Chat_Active, LaunchChatEvent, user_Chat_ID
+    // props: ReturnToChat, user_Chat_Active, LaunchChatEvent
     constructor(props) {
         super(props);
 
@@ -60,7 +60,6 @@ class IceBreakerSelection extends Component {
                 ReturnToSelection={this.ReturnToSelection} 
                 user_Chat_Active={this.props.user_Chat_Active} 
                 LaunchChatEvent={this.props.LaunchChatEvent}  
-                user_Chat_ID={this.props.user_Chat_ID} 
             />);
         }
         else if(this.state.iceBreaker === Consts.iceBreakers.TRAP) {
@@ -68,7 +67,6 @@ class IceBreakerSelection extends Component {
                 ReturnToSelection={this.ReturnToSelection} 
                 user_Chat_Active={this.props.user_Chat_Active} 
                 LaunchChatEvent={this.props.LaunchChatEvent}  
-                user_Chat_ID={this.props.user_Chat_ID}
             /> );
         }
     }

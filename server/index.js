@@ -49,7 +49,15 @@ io.on("connection", (socket) => {
     });
 
     socket.on('SendMessage', ( data ) => {
-        io.to(data.chatPtnrID).emit('RecMessage', { ...data, chatPtnrID: socket.id, fromSelf: false });
+        //console.log(`Message received at server: isEvent: ${data.isEvent}, msgType: ${data.msgData.type}.`);
+        io.to(data.msgData.chatPtnrID).emit('RecMessage', { 
+            msgData: {...data.msgData, chatPtnrID: socket.id},
+            isEvent: data.isEvent
+        });
+    });
+
+    socket.on('ClearEvent', ( chatPtnrID ) => {
+        io.to(chatPtnrID).emit('RecClearEvent', socket.id);
     });
 
     socket.on("disconnect", () => {

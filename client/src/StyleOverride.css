@@ -100,17 +100,24 @@ html, body, #root {
 .messageBox.fromOther {
     border-radius: 10px 17px 17px 0;
 }
+.messageBox.fromAdmin {
+    border-radius: 0;
+    font-size: 90%;
+}
 
 .messageText {
     width: 100%;
     letter-spacing: 0;
-    float: left;
     font-size: 1.1em;
     word-wrap: break-word;
 }
 
 .bgLightBlue {
     background-color: #3694ff;
+}
+
+.bgLightGreen {
+    background-color: #36ff8a;
 }
 
 .FullSpreadAbsElem, .reimplementScroll {

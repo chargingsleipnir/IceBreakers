@@ -6,7 +6,7 @@ import imgPunch from '../../../../../images/Punch_02_32x32.png';
 import imgTackle from '../../../../../images/Tackle_01_32x32.png';
 import imgKick from '../../../../../images/Kick_02_32x32.png';
 
-const IBFight = ({ ReturnToSelection, user_Chat_Active, LaunchChatEvent, user_Chat_ID }) => {
+const IBFightSetup = ({ ReturnToSelection, user_Chat_Active, LaunchChatEvent }) => {
 
     var elem_Form = React.createRef();
     var elem_ProvokeMsg = React.createRef();
@@ -51,17 +51,32 @@ const IBFight = ({ ReturnToSelection, user_Chat_Active, LaunchChatEvent, user_Ch
             }
         }
 
+        // Cache values so setTimeout can use them despite being gone from original source.
+        const msgProvoke = elem_ProvokeMsg.current.value;
+        const msgWin = elem_WinMsg.current.value;
+        const msgLose = elem_LoseMsg.current.value;
+
         // TODO: Validate inputs? LOW PRIORITY
         LaunchChatEvent({ 
             type: Consts.msgTypes.CE_FIGHT,
             data: {
-                msgProvoke: elem_ProvokeMsg.current.value,
-                msgWin: elem_WinMsg.current.value,
-                msgLose: elem_LoseMsg.current.value,
-                moves
-            },
-            chatPtnrID: user_Chat_ID                
-        });
+                step: Consts.fightSteps.INIT,
+                msgProvoke: msgProvoke
+            }              
+        }, false);
+
+        setTimeout(() => {
+            LaunchChatEvent({ 
+                type: Consts.msgTypes.CE_FIGHT,
+                data: {
+                    step: Consts.fightSteps.INIT,
+                    msgProvoke: msgProvoke,
+                    msgWin: msgWin,
+                    msgLose: msgLose,
+                    moves
+                }             
+            }, true);
+        }, Consts.CE_MSG_DELAY);
     };
 
     return (
@@ -94,4 +109,4 @@ const IBFight = ({ ReturnToSelection, user_Chat_Active, LaunchChatEvent, user_Ch
     );
 };
 
-export default IBFight;
+export default IBFightSetup;

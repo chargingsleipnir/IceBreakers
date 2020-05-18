@@ -13,7 +13,7 @@ const User = ({user, LikeUserToggle, ToPageChat}) => {
     if(user.unreadMsg) {
         // Set different coloured notification if the last message is an event
         let classes = "notificationBadge"
-        if(user.messages[user.messages.length - 1].type !== Consts.msgTypes.TEXT)
+        if(user.chatEvent !== null)
             classes += " isEvent"
 
         html_UnreadMsgNotif = <span className={classes}></span>

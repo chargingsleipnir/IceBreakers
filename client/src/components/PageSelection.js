@@ -53,29 +53,56 @@ class PageSelection extends Component {
         // And the data will futher specify (test:message, ice breaker:details of which step they're on)
         // Data sent to the message component, where it's read and deciphered and html is built
 
-        props.socket.on('RecMessage', (data) => {
-            console.log(`Received message, type: "${data.type}" chatting with user: "${data.chatPtnrID}", sent from self?: ${data.fromSelf}, with data:`, data.data);
+        props.socket.on('RecMessage', (recObj) => {
+            console.log(`Received message, type: "${recObj.msgData.type}" chatting with user: "${recObj.msgData.chatPtnrID}", with data:`, recObj.msgData.data);
             
-            let changeIndex = this.state.users.findIndex((user) => user.id === data.chatPtnrID);
-            this.state.users[changeIndex].messages.push(data);
-            
-            // If the sender of that message is someone I'm not currently in chat with, indicate that I have an unread message waiting.
-            let willBeRead = false;
-            if(this.state.user_Chat)
-                if(this.state.user_Chat.id === data.chatPtnrID)
-                    willBeRead = true;
+            this.setState((prevState) => {
 
-            this.state.users[changeIndex].unreadMsg = !willBeRead;
+                let changeIndex = prevState.users.findIndex(({ id }) => id === recObj.msgData.chatPtnrID);
+                const moddedMsgObj = { ...recObj.msgData, fromSelf: false };
+    
+                // Hold event in seperate container while it's running, and build messages up as it executes.
+                if(recObj.isEvent) {
+                    prevState.users[changeIndex].chatEvent = moddedMsgObj;
+                    prevState.users[changeIndex].disableSend = true;
+                }
+                else {
+                    prevState.users[changeIndex].messages.push(moddedMsgObj);
+                }
 
-            this.setState({ users: this.state.users });
+                var unreadMsg = true;
+                if(this.state.user_Chat) {
+                    if(this.state.user_Chat.id === recObj.msgData.chatPtnrID)
+                        unreadMsg = false;
+                }
+
+                prevState.users[changeIndex].unreadMsg = unreadMsg
+    
+                return { 
+                    users: prevState.users,
+                    user_Chat: unreadMsg === false ? prevState.users[changeIndex] : null
+                }
+            }); 
+        });
+
+        props.socket.on('RecClearEvent', (chatPtnrID) => {
+            this.setState((prevState) => {
+                let changeIndex = prevState.users.findIndex(({ id }) => id === chatPtnrID);
+                prevState.users[changeIndex].chatEvent = null;
+                prevState.users[changeIndex].disableSend = false;
+    
+                return { 
+                    users: prevState.users,
+                    user_Chat: prevState.users[changeIndex]
+                } 
+            });
         });
 
         this.ToPageUsers = this.ToPageUsers.bind(this);
         this.LikeUserToggle = this.LikeUserToggle.bind(this);
         this.ToPageChat = this.ToPageChat.bind(this);
         this.SendMessage = this.SendMessage.bind(this);
-        this.SetUserEventEngaged = this.SetUserEventEngaged.bind(this);
-        this.UpdatetUser = this.UpdatetUser.bind(this);
+        this.ClearEvent = this.ClearEvent.bind(this);
     }
 
     ToPageUsers () {
@@ -101,37 +128,55 @@ class PageSelection extends Component {
         }));
     }
 
-    // User_chat and that user within the list updated.
-    UpdatetUser (user_Chat) {
-        this.setState(prevState => ({ 
-            users: prevState.users.map((elem) => elem.id === user_Chat.id ? user_Chat : elem),
-            user_Chat
-        }));
+    // Update my own message view, not required from server
+    SendMessage (msgData, isEvent) {
+        
+        this.props.socket.emit('SendMessage', {
+            msgData: { ...msgData, chatPtnrID: this.state.user_Chat.id },
+            isEvent 
+        });
+
+        this.setState((prevState) => {
+            
+            let changeIndex = prevState.users.findIndex(({ id }) => id === prevState.user_Chat.id);
+            const moddedMsgObj = { ...msgData, fromSelf: true };
+
+            if(isEvent) {
+                prevState.users[changeIndex].chatEvent = moddedMsgObj;
+                prevState.users[changeIndex].disableSend = true;
+            }
+            else {
+                prevState.users[changeIndex].messages.push(moddedMsgObj);
+            }
+
+            //console.log(prevState);
+
+            return { 
+                users: prevState.users,
+                user_Chat: prevState.users[changeIndex]
+            } 
+        });
     }
 
     // Update my own message view, not required from server
-    SendMessage (dataObj, eventEngaged) {
-        this.props.socket.emit('SendMessage', dataObj);
+    ClearEvent () {
+        this.props.socket.emit('ClearEvent', this.state.user_Chat.id);
 
-        // let changeIndex = this.state.users.findIndex(({ id }) => id === this.state.user_Chat.id);
-        // this.state.users[changeIndex].messages.push({ ...dataObj, fromSelf: true });
-        // this.setState({ users: this.state.users });
-
-        this.setState((prevState) => { 
+        this.setState((prevState) => {
             
             let changeIndex = prevState.users.findIndex(({ id }) => id === prevState.user_Chat.id);
-            prevState.users[changeIndex].messages.push({ ...dataObj, fromSelf: true });
-            prevState.users[changeIndex].eventEngaged = eventEngaged;
+            prevState.users[changeIndex].chatEvent = null;
+            prevState.users[changeIndex].disableSend = false;
 
-            return {
+            return { 
                 users: prevState.users,
-                user_Chat: { ...prevState.user_Chat, eventEngaged: eventEngaged }
+                user_Chat: prevState.users[changeIndex]
             } 
         });
     }
 
     render() {
-        console.log(this.state);
+        //console.log(this.state);
         if(this.state.page === Consts.pages.USERS)
             return ( <Users users={this.state.users} LikeUserToggle={this.LikeUserToggle} ToPageChat={this.ToPageChat} /> );
         else if(this.state.page === Consts.pages.CHAT) {
@@ -142,13 +187,11 @@ class PageSelection extends Component {
                     user_Chat_Active = false;
 
             return (<Chat 
-                socket={this.props.socket}
                 user_Chat={this.state.user_Chat}
                 user_Chat_Active={user_Chat_Active}
                 SendMessage={this.SendMessage}
-                SetUserEventEngaged={this.SetUserEventEngaged}
-                UpdatetUser={this.UpdatetUser}
-                ToPageUsers={this.ToPageUsers} 
+                ClearEvent={this.ClearEvent}
+                ToPageUsers={this.ToPageUsers}
             />);
         }
     }

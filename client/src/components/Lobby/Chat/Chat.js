@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import ScrollToBottom from 'react-scroll-to-bottom';
 
-import IceBreakerSelection from './IceBreakerSelection';
-// import IBFight_Play from './IceBreakers/Play/IB_Fight';
-// import IBTrap_Play from './IceBreakers/Play/IB_Trap';
-
 import Consts from '../../../Consts';
 
 import UserInfoBar from './UserInfoBar';
 import Message from './Message';
+
+import IceBreakerSelection from './IceBreakerSelection';
+import IBFightEngage from './IceBreakers/Fight/Engage';
+import IBTrapEngage from './IceBreakers/Trap/Engage';
 
 class Chat extends Component {
 
@@ -17,7 +17,7 @@ class Chat extends Component {
         preppingChatEvent: false
     };
 
-    //props: {socket, user_Chat, user_Chat_Active, SendMessage, SetUserEventEngaged, UpdatetUser, ToPageUsers}
+    //props: {user_Chat, user_Chat_Active, SendMessage, ToPageUsers}
     constructor(props) {
         super(props);
 
@@ -44,23 +44,20 @@ class Chat extends Component {
         this.setState({ msgText: '' });
         this.props.SendMessage({ 
             type: Consts.msgTypes.TEXT, 
-            data: this.state.msgText, 
-            chatPtnrID: this.props.user_Chat.id
+            data: this.state.msgText
         }, false);
     };
 
     // Specific to chat events, wherin the age returns here once they are sent, and chat with this user is disabled until the event is complete.
     // TODO: Long-term: Can cancel event if it has not yet begun by recipient.
-    LaunchChatEvent(dataObj) {
+    LaunchChatEvent(dataObj, asEvent) {
         if(!this.props.user_Chat_Active) {
             console.warn("Message not sent, that user has been removed from the server.");
             return;
         }
         
         this.setState({ preppingChatEvent: false });
-
-        // passing true prevents any further chat with this user until it's fully played out
-        this.props.SendMessage(dataObj, true);
+        this.props.SendMessage(dataObj, asEvent);
     }
 
     ChooseIceBreaker (event) {
@@ -77,13 +74,34 @@ class Chat extends Component {
                 ReturnToChat={this.ReturnToChat} 
                 user_Chat_Active={this.props.user_Chat_Active} 
                 LaunchChatEvent={this.LaunchChatEvent} 
-                user_Chat_ID={this.props.user_Chat.id} 
             />);
         }
         else {
 
             // Disable chat with this user if they left ("account" gone), or I've sent an event to them, until they complete it.
-            const disabled = !this.props.user_Chat_Active || this.props.user_Chat.eventEngaged;
+            const disabled = !this.props.user_Chat_Active || this.props.user_Chat.disableSend;
+
+            // TODO: Event will play out once an ice breaker is selected.
+            //* Each Step (managed internally) will produce a resulting message, ideally the same message for both sender and Receiver
+            //* For example, and event step is a button/option, which when selected, is replaced with a message indicating what that selection was.
+            //* -1 event step, +1 message
+
+            // Rendering considerations:
+            // Sender event step - Should maybe just be a small message of what the receiver can do (e.g. "Selecting move") - Can easily be created as each new event message comes in.
+            // Sender message - Mostly the same for both parties
+            // Receiver event step - Interactive elements leading into messages
+            // Receiver message - Mostly the same for both parties
+
+            var chatEvent = "";
+            //console.log(this.props.user_Chat)
+            if(this.props.user_Chat.chatEvent) {
+                const evt = this.props.user_Chat.chatEvent;
+                //console.log(evt.type)
+                if(evt.type === Consts.msgTypes.CE_FIGHT)
+                    chatEvent = <IBFightEngage eventData={evt} SendMessage={this.props.SendMessage} ClearEvent={this.props.ClearEvent} />;
+                else if(evt.type === Consts.msgTypes.CE_FIGHT)
+                    chatEvent = <IBTrapEngage eventData={evt} SendMessage={this.props.SendMessage} ClearEvent={this.props.ClearEvent} />;
+            }
 
             return (
                 <div className="h-100 d-flex flex-column justify-content-between">
@@ -94,10 +112,13 @@ class Chat extends Component {
                                 { 
                                     this.props.user_Chat.messages.map((message, i) => 
                                         <div className="innerScrollItem" key={i}>
-                                            <Message message={message} />
+                                            <Message message={message} chatPtnrName={this.props.user_Chat.name} />
                                         </div>
-                                    ) 
+                                    )
                                 }
+                                <div className="innerScrollItem"> 
+                                    {chatEvent}
+                                </div>
                             </ScrollToBottom>
                         </div>
                     </div>

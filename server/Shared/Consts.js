@@ -6,10 +6,12 @@
 
     exports.pages = { USERS: 0, CHAT: 1 };
     exports.iceBreakers = { NONE: 0, FIGHT: 1, TRAP: 2 };
+    exports.CE_MSG_DELAY = 750;
 
     exports.FIGHT_MAX_ROUNDS = 9;
     exports.fightOptions = { PUNCH: 0, TACKLE: 1, KICK: 2 };
+    exports.fightSteps = { INIT: 0, ACT: 1, END: 2 };
 
-    exports.msgTypes = { TEXT: 0, CE_FIGHT: 1, CE_TRAP: 2 }
+    exports.msgTypes = { TEXT: 0, CE_FIGHT: 1, CE_TRAP: 2 }    
 
 })(typeof exports === 'undefined' ? this['Consts'] = {} : exports);

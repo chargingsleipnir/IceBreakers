@@ -11,8 +11,9 @@ class User {
         this.likeThem = false,
         this.likesMe = false,
         this.unreadMsg = false,
-        this.eventEngaged = false,
-        this.messages = []
+        this.disableSend = false,
+        this.messages = [],
+        this.chatEvent = null
     }
 }
 
