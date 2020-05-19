@@ -8,8 +8,8 @@ const Consts = {
     CE_MSG_DELAY: 750,
 
     FIGHT_MAX_ROUNDS: 5,
-    fightActions: { PUNCH: 0, TACKLE: 1, KICK: 2 },
-    fightResults: { LOSE: -1, TIE: 0, WIN: 1 },
+    fightRoundActions: { PUNCH: 0, TACKLE: 1, KICK: 2 },
+    fightWinner: { SENDER: 0, RESPONDER: 1, TIE: 2 },
     fightSteps: { INIT: 0, ACCEPT: 1, CANCEL: 2, ACT: 3, END: 4 }
 };
 

@@ -9,41 +9,44 @@ import imgKick from '../../../../../images/Kick_02_32x32.png';
 const IBFightOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
 
     const GetImage = (action) => {
-        if(action === Consts.fightActions.PUNCH)
+        if(action === Consts.fightRoundActions.PUNCH)
             return imgPunch;
-        else if(action === Consts.fightActions.TACKLE)
+        else if(action === Consts.fightRoundActions.TACKLE)
             return imgTackle;
-        else if(action === Consts.fightActions.KICK)
+        else if(action === Consts.fightRoundActions.KICK)
             return imgKick;
     }
 
-    // fromSelf - self being the subject, or action taker.
-    const GetFightResultMessage = (fightResult) => {
-        if(fightResult === Consts.fightResults.LOSE)
+    // "Self" - the person who sent these messages, is the fight responder
+    const GetRoundResultMessage = (roundWinner) => {
+        if(roundWinner === Consts.fightWinner.SENDER)
             return fromSelf ? "Ouch!" : "Nice!";
-        else if(fightResult === Consts.fightResults.TIE)
-            return "Oof...";
-        else if(fightResult === Consts.fightResults.WIN)
+        else if(roundWinner === Consts.fightWinner.RESPONDER)
             return fromSelf ? "Nice!" : "Ouch!";
+        else if(roundWinner === Consts.fightWinner.TIE)
+            return "Oof...";
+    }
+
+    // "Self" - the person who sent these messages, is the fight responder
+    const GetFightResultMessage = (fightWinner) => {
+        if(fightWinner === Consts.fightWinner.SENDER)
+            return fromSelf ? `${chatPtnrName} won!` : `You beat ${chatPtnrName}!`;
+        else if(fightWinner === Consts.fightWinner.RESPONDER)
+            return fromSelf ? `You beat ${chatPtnrName}!` : `${chatPtnrName} won!`;
+        else if(fightWinner === Consts.fightWinner.TIE)
+            return "We have a tie!";
     }
 
     if(data.step === Consts.fightSteps.INIT) {
+
+        const msg = fromSelf ? `You challenged ${chatPtnrName} to a fight!` : `${chatPtnrName} challenged you to a fight!`;
         return (
-            fromSelf ? (
-                <div className="d-flex justify-content-center mt-2">
-                    <div className="messageBox bgLightBlue text-center fromAdmin">
-                        <div className="messageText text-white">You challenged {chatPtnrName} to a fight:</div>
-                        <div className="messageText text-white">{ReactEmoji.emojify(data.msgProvoke)}</div>
-                    </div>
+            <div className="d-flex justify-content-center mt-2">
+                <div className="messageBox bgLightBlue text-center fromAdmin">
+                    <div className="messageText text-white">{msg}</div>
+                    <div className="messageText text-white">"{ReactEmoji.emojify(data.msgProvoke)}"</div>
                 </div>
-            ) : (
-                <div className="d-flex justify-content-center mt-2">
-                    <div className="messageBox bgLightBlue text-center fromAdmin">
-                        <div className="messageText text-white">{chatPtnrName} challenged you to a fight:</div>
-                        <div className="messageText text-white">{ReactEmoji.emojify(data.msgProvoke)}</div>
-                    </div>
-                </div>
-            )
+            </div>
         );
     }
     else if(data.step === Consts.fightSteps.ACCEPT) {
@@ -56,57 +59,49 @@ const IBFightOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
         );
     }
     else if(data.step === Consts.fightSteps.CANCEL) {
+        
+        const msg = fromSelf ? `You wimped out.` : `${chatPtnrName} wimped out.`;
         return (
-            fromSelf ? (
-                <div className="d-flex justify-content-center mt-2">
-                    <div className="messageBox bgLightBlue text-center fromAdmin">
-                        <div className="messageText text-white">You wimped out.</div>
-                    </div>
+            <div className="d-flex justify-content-center mt-2">
+                <div className="messageBox bgLightBlue text-center fromAdmin">
+                    <div className="messageText text-white">{msg}</div>
                 </div>
-            ) : (
-                <div className="d-flex justify-content-center mt-2">
-                    <div className="messageBox bgLightBlue text-center fromAdmin">
-                        <div className="messageText text-white">{chatPtnrName} wimped out.</div>
-                    </div>
-                </div>
-            )
+            </div>
         );
     }
-    // data = { step, round: { fightActionSubj, fightActionObj, result } }
+    // roundWinner
+    // actionSent
+    // actionResp
     else if(data.step === Consts.fightSteps.ACT) {
         return (
             <div className="d-flex justify-content-center mt-2">
                 <div className="messageBox fullW bgLightBlue fromAdmin">
                     <div className="d-flex justify-content-between align-items-center mt-1">
+                        {/* In this case, "self", the person who sent the message, is the action Responder */}
                         <div className="bg-warning mr-3">
-                            <img src={GetImage(data.round[fromSelf ? "fightActionObj" : "fightActionSubj"])} alt="action" className="m-1" />
+                            <img src={GetImage(data[fromSelf ? "actionSent" : "actionResp"])} alt="action" className="m-1" />
                         </div>
                         <div className="mr-3 text-white">
-                            {GetFightResultMessage(data.round.result)}
+                            {GetRoundResultMessage(data.roundWinner)}
                         </div>
                         <div className="bg-warning">
-                            <img src={GetImage(data.round[fromSelf ? "fightActionSubj" : "fightActionObj"])} alt="action" className="m-1" />
+                            <img src={GetImage(data[fromSelf ? "actionResp" : "actionSent"])} alt="action" className="m-1" />
                         </div>
                     </div>
                 </div>
             </div>
         );
     }
-    // data = { step, results: [Const.fightOutcomes: { LOSE: -1, TIE: 0, WIN: 1 }] }
+    // fightWinner
+    // msgEnd will be either: msgWin or msgLose or msgTie, as setup by sender
     else if(data.step === Consts.fightSteps.END) {
-
-        // TODO: Read all results and declare and make some declaration of winner.
-
         return (
-            fromSelf ? (
-                <div className="d-flex justify-content-center mt-2">
-
+            <div className="d-flex justify-content-center mt-2">
+                <div className="messageBox bgLightBlue text-center fromAdmin">
+                    <div className="messageText text-white">{GetFightResultMessage(data.fightWinner)}</div>
+                    <div className="messageText text-white">"{ReactEmoji.emojify(data.msgEnd)}"</div>
                 </div>
-            ) : (
-                <div className="d-flex justify-content-center mt-2">
-
-                </div>
-            )
+            </div>
         );
     }
     else return "";

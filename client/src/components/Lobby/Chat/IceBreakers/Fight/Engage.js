@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ReactEmoji from 'react-emoji';
 import Consts from '../../../../../Consts';
 
@@ -7,62 +7,126 @@ import imgTackle from '../../../../../images/Tackle_01_32x32.png';
 import imgKick from '../../../../../images/Kick_02_32x32.png';
 
 const IBFightEngage = ({ eventData: { fromSelf, data }, SendMessage, UpdateEventData, ClearEvent, chatPtnrName}) => {
-    // data: { step, msgProvoke, msgWin, msgLose, msgTie, actions }
+    // data: { step, msgProvoke, msgWin, msgLose, msgTie, actionsSent, actionsResp:[] }
 
-    const [rounds, SetRounds] = useState([]);
+    const OnBtnFight = (event) => {
+        event.preventDefault();
 
-    const AssessAction = (fightActionSubj, fightActionObj) => {
-        if(fightActionSubj === Consts.fightActions.PUNCH) {
-            if(fightActionObj === Consts.fightActions.PUNCH)
-                return Consts.fightResults.TIE
-            else if(fightActionObj === Consts.fightActions.TACKLE)
-                return Consts.fightResults.WIN
-            else if(fightActionObj === Consts.fightActions.KICK)
-                return Consts.fightResults.LOSE
+        SendMessage({ 
+            type: Consts.msgTypes.CE_FIGHT,
+            data: { step: Consts.fightSteps.ACCEPT }              
+        }, false);
+
+        setTimeout(() => {
+            UpdateEventData({ step: Consts.fightSteps.ACT });
+        }, Consts.CE_MSG_DELAY);
+    }
+
+    const OnBtnFlee = (event) => {
+        event.preventDefault();
+
+        SendMessage({ 
+            type: Consts.msgTypes.CE_FIGHT,
+            data: { step: Consts.fightSteps.CANCEL }              
+        }, false);
+        ClearEvent();
+    }
+
+    const AssessRoundWinner = (actionOfSender, actionOfReponder) => {
+        if(actionOfSender === Consts.fightRoundActions.PUNCH) {
+            if(actionOfReponder === Consts.fightRoundActions.PUNCH)
+                return Consts.fightWinner.TIE
+            else if(actionOfReponder === Consts.fightRoundActions.TACKLE)
+                return Consts.fightWinner.SENDER
+            else if(actionOfReponder === Consts.fightRoundActions.KICK)
+                return Consts.fightWinner.RESPONDER
         }
-        else if(fightActionSubj === Consts.fightActions.TACKLE) {
-            if(fightActionObj === Consts.fightActions.PUNCH)
-                return Consts.fightResults.LOSE
-            else if(fightActionObj === Consts.fightActions.TACKLE)
-                return Consts.fightResults.TIE
-            else if(fightActionObj === Consts.fightActions.KICK)
-                return Consts.fightResults.WIN
+        else if(actionOfSender === Consts.fightRoundActions.TACKLE) {
+            if(actionOfReponder === Consts.fightRoundActions.PUNCH)
+                return Consts.fightWinner.RESPONDER
+            else if(actionOfReponder === Consts.fightRoundActions.TACKLE)
+                return Consts.fightWinner.TIE
+            else if(actionOfReponder === Consts.fightRoundActions.KICK)
+                return Consts.fightWinner.SENDER
         }
-        else if(fightActionSubj === Consts.fightActions.KICK) {
-            if(fightActionObj === Consts.fightActions.PUNCH)
-                return Consts.fightResults.WIN
-            else if(fightActionObj === Consts.fightActions.TACKLE)
-                return Consts.fightResults.LOSE
-            else if(fightActionObj === Consts.fightActions.KICK)
-                return Consts.fightResults.TIE
+        else if(actionOfSender === Consts.fightRoundActions.KICK) {
+            if(actionOfReponder === Consts.fightRoundActions.PUNCH)
+                return Consts.fightWinner.SENDER
+            else if(actionOfReponder === Consts.fightRoundActions.TACKLE)
+                return Consts.fightWinner.RESPONDER
+            else if(actionOfReponder === Consts.fightRoundActions.KICK)
+                return Consts.fightWinner.TIE
         }
     }
 
-    if(data.step === Consts.fightSteps.INIT) {
+    const OnAct = (event, fightAction) => {
+        event.preventDefault();
 
-        const OnBtnFight = (event) => {
-            event.preventDefault();
+        data.actionsResp.push(fightAction);
 
-            SendMessage({ 
-                type: Consts.msgTypes.CE_FIGHT,
-                data: { step: Consts.fightSteps.ACCEPT }              
-            }, false);
+        const actionSent = data.actionsSent[data.actionsResp.length - 1];
 
+        // This regular step will parse the given win/loss/tie and declare a winner, displaying the correct message for each battler.
+        SendMessage({ 
+            type: Consts.msgTypes.CE_FIGHT,
+            data: {
+                step: Consts.fightSteps.ACT,
+                roundWinner: AssessRoundWinner(actionSent, fightAction),
+                actionSent: actionSent,
+                actionResp: fightAction
+            }              
+        }, false);
+
+        // Last action taken, fight over
+        if(data.actionsResp.length >= data.actionsSent.length) {
+            // The END step will parse the # of wins/losses/ties and declare a winner, displaying the correct message for each battler.
+            setTimeout(() => {
+
+                // Read all results and declare and make some declaration of winner.
+                var senderWins = 0;
+                var responderWins = 0;
+
+                for(let i = 0; i < data.actionsSent.length; i++) {
+                    const roundWinner = AssessRoundWinner(data.actionsSent[i], data.actionsResp[i]);
+                    if(roundWinner === Consts.fightWinner.SENDER)
+                        senderWins++;
+                    else if(roundWinner === Consts.fightWinner.RESPONDER)
+                        responderWins++;
+                }
+
+                // Messages were setup by Sender
+                var fightWinner = Consts.fightWinner.TIE;
+                var msgEnd = data.msgTie;
+                if(senderWins > responderWins) {
+                    fightWinner = Consts.fightWinner.SENDER;
+                    msgEnd = data.msgWin;
+                }
+                else if(senderWins < responderWins) {
+                    fightWinner = Consts.fightWinner.RESPONDER;
+                    msgEnd = data.msgLose;
+                }
+
+                ClearEvent();
+                SendMessage({ 
+                    type: Consts.msgTypes.CE_FIGHT,
+                    data: { 
+                        step: Consts.fightSteps.END,
+                        fightWinner,
+                        msgEnd
+                    }
+                }, false);
+            }, Consts.CE_MSG_DELAY);
+        }
+        // Fight continuing
+        else {
+            // This is simply acting as recussion, bringing us here again.
             setTimeout(() => {
                 UpdateEventData({ step: Consts.fightSteps.ACT });
             }, Consts.CE_MSG_DELAY);
-        }
+        }            
+    }
 
-        const OnBtnFlee = (event) => {
-            event.preventDefault();
-
-            SendMessage({ 
-                type: Consts.msgTypes.CE_FIGHT,
-                data: { step: Consts.fightSteps.CANCEL }              
-            }, false);
-            ClearEvent();
-        }
-
+    if(data.step === Consts.fightSteps.INIT) {
         return (
            fromSelf ? (
                 <div className="d-flex justify-content-center mt-2">
@@ -84,60 +148,19 @@ const IBFightEngage = ({ eventData: { fromSelf, data }, SendMessage, UpdateEvent
         );
     }
     else if(data.step === Consts.fightSteps.ACT) {
-
-        const OnAct = (event, fightAction) => {
-            event.preventDefault();
-
-            const result = AssessAction(fightAction, data.actions[rounds.length]);
-            const round = { fightActionSubj: fightAction, fightActionObj: data.actions[rounds.length], result };
-            SetRounds([...rounds, round]);
-
-            SendMessage({ 
-                type: Consts.msgTypes.CE_FIGHT,
-                data: {
-                    step: Consts.fightSteps.ACT,
-                    round
-                }              
-            }, false);
-
-            // Last action taken, fight over
-            if(rounds.length >= data.actions.length) {
-                // The END step will parse the # of wins/losses/ties and declare a winner, displaying the correct message.
-                setTimeout(() => {
-                    ClearEvent();
-                    SendMessage({ 
-                        type: Consts.msgTypes.CE_FIGHT,
-                        data: { 
-                            step: Consts.fightSteps.END,
-                            rounds
-                        }
-                    }, false);
-
-                    SetRounds([]);
-                }, Consts.CE_MSG_DELAY);
-            }
-            // Fight continuing
-            else {
-                // This is simply acting as recussion, bringing us here again.
-                setTimeout(() => {
-                    UpdateEventData({ step: Consts.fightSteps.ACT });
-                }, Consts.CE_MSG_DELAY);
-            }            
-        }
-
         return (
            fromSelf ? (
                 <div className="d-flex justify-content-center mt-2">
                     <div className="messageBox bgLightBlue fromAdmin">
                         <div className="messageText text-center text-white">Select a move:</div>
                         <div className="d-flex justify-content-around mt-1 p-2">
-                            <button className="btn bg-warning mr-3" onClick={event => OnAct(event, Consts.fightActions.PUNCH)}>
+                            <button className="btn bg-warning mr-3" onClick={event => OnAct(event, Consts.fightRoundActions.PUNCH)}>
                                 <img src={imgPunch} alt="punch" className="m-1" />
                             </button>
-                            <button className="btn bg-warning mr-3" onClick={event => OnAct(event, Consts.fightActions.TACKLE)}>
+                            <button className="btn bg-warning mr-3" onClick={event => OnAct(event, Consts.fightRoundActions.TACKLE)}>
                                 <img src={imgTackle} alt="tackle" className="m-1" />
                             </button>
-                            <button className="btn bg-warning" onClick={event => OnAct(event, Consts.fightActions.KICK)}>
+                            <button className="btn bg-warning" onClick={event => OnAct(event, Consts.fightRoundActions.KICK)}>
                                 <img src={imgKick} alt="kick" className="m-1" />
                             </button>
                         </div>
@@ -159,7 +182,7 @@ const IBFightEngage = ({ eventData: { fromSelf, data }, SendMessage, UpdateEvent
 export default IBFightEngage;
 
 
-// TODO: Find some other way to store persistent data... maybe along side the "actions" array of the user event data
+// TODO: Find some other way to store persistent data... maybe along side the "actionsSent" array of the user event data
 //* Even as a class with constructor (below), the data does not persist, as a new instance of the class is created each time the component is called
 // The constructor cal repeats each time... :/
 
@@ -178,7 +201,7 @@ export default IBFightEngage;
 // class IBFightEngage extends Component {
 
 //     //{ eventData: { fromSelf, data }, SendMessage, UpdateEventData, ClearEvent, chatPtnrName}
-//     // data: { step, msgProvoke, msgWin, msgLose, msgTie, actions }
+//     // data: { step, msgProvoke, msgWin, msgLose, msgTie, actionsSent, actionsResp }
 //     constructor(props) {
 //         super(props);
 
@@ -191,33 +214,6 @@ export default IBFightEngage;
 //         this.OnBtnFight = this.OnBtnFight.bind(this);
 //         this.OnBtnFlee = this.OnBtnFlee.bind(this);
 //         this.OnAct = this.OnAct.bind(this);
-//     }
-
-//     AssessAction (fightActionSubj, fightActionObj) {
-//         if(fightActionSubj === Consts.fightActions.PUNCH) {
-//             if(fightActionObj === Consts.fightActions.PUNCH)
-//                 return Consts.fightResults.TIE
-//             else if(fightActionObj === Consts.fightActions.TACKLE)
-//                 return Consts.fightResults.WIN
-//             else if(fightActionObj === Consts.fightActions.KICK)
-//                 return Consts.fightResults.LOSE
-//         }
-//         else if(fightActionSubj === Consts.fightActions.TACKLE) {
-//             if(fightActionObj === Consts.fightActions.PUNCH)
-//                 return Consts.fightResults.LOSE
-//             else if(fightActionObj === Consts.fightActions.TACKLE)
-//                 return Consts.fightResults.TIE
-//             else if(fightActionObj === Consts.fightActions.KICK)
-//                 return Consts.fightResults.WIN
-//         }
-//         else if(fightActionSubj === Consts.fightActions.KICK) {
-//             if(fightActionObj === Consts.fightActions.PUNCH)
-//                 return Consts.fightResults.WIN
-//             else if(fightActionObj === Consts.fightActions.TACKLE)
-//                 return Consts.fightResults.LOSE
-//             else if(fightActionObj === Consts.fightActions.KICK)
-//                 return Consts.fightResults.TIE
-//         }
 //     }
 
 //     OnBtnFight (event) {
@@ -247,7 +243,7 @@ export default IBFightEngage;
 //         event.preventDefault();
 
 //         const result = this.AssessAction(fightAction, this.data.actions[this.rounds.length]);
-//         const round = { fightActionSubj: fightAction, fightActionObj: this.data.actions[this.rounds.length], result };
+//         const round = { fightActionSubj: fightAction, fightActionObj: this.data.actionsSent[this.rounds.length], result };
 //         this.rounds.push(round);
 
 //         this.props.SendMessage({ 
@@ -261,7 +257,7 @@ export default IBFightEngage;
 //         console.log(this.rounds);
 
 //         // Last action taken, fight over
-//         if(this.rounds.length >= this.data.actions.length) {
+//         if(this.rounds.length >= this.data.actionsSent.length) {
 //             // The END step will parse the # of wins/losses/ties and declare a winner, displaying the correct message.
 //             setTimeout(() => {
 //                 this.props.ClearEvent();
@@ -317,13 +313,13 @@ export default IBFightEngage;
 //                         <div className="messageBox bgLightBlue fromAdmin">
 //                             <div className="messageText text-center text-white">Select a move:</div>
 //                             <div className="d-flex justify-content-around mt-1 p-2">
-//                                 <button className="btn bg-warning mr-3" onClick={event => this.OnAct(event, Consts.fightActions.PUNCH)}>
+//                                 <button className="btn bg-warning mr-3" onClick={event => this.OnAct(event, Consts.fightRoundActions.PUNCH)}>
 //                                     <img src={imgPunch} alt="punch" className="m-1" />
 //                                 </button>
-//                                 <button className="btn bg-warning mr-3" onClick={event => this.OnAct(event, Consts.fightActions.TACKLE)}>
+//                                 <button className="btn bg-warning mr-3" onClick={event => this.OnAct(event, Consts.fightRoundActions.TACKLE)}>
 //                                     <img src={imgTackle} alt="tackle" className="m-1" />
 //                                 </button>
-//                                 <button className="btn bg-warning" onClick={event => this.OnAct(event, Consts.fightActions.KICK)}>
+//                                 <button className="btn bg-warning" onClick={event => this.OnAct(event, Consts.fightRoundActions.KICK)}>
 //                                     <img src={imgKick} alt="kick" className="m-1" />
 //                                 </button>
 //                             </div>

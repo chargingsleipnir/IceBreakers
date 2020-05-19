@@ -9,7 +9,7 @@
     exports.CE_MSG_DELAY = 750;
 
     exports.FIGHT_MAX_ROUNDS = 9;
-    exports.fightActions = { PUNCH: 0, TACKLE: 1, KICK: 2 };
+    exports.fightRoundActions = { PUNCH: 0, TACKLE: 1, KICK: 2 };
     exports.fightSteps = { INIT: 0, ACT: 1, END: 2 };
 
     exports.msgTypes = { TEXT: 0, CE_FIGHT: 1, CE_TRAP: 2 }    

@@ -21,16 +21,16 @@ const IBFightSetup = ({ ReturnToSelection, user_Chat_Active, LaunchChatEvent }) 
         rounds.push(
             <div key={i}>
                 <div className="d-flex justify-content-around">
-                    <label className="noStyleLabel" htmlFor={radioName + "_" + Consts.fightActions.PUNCH}>
-                        <input type="radio" id={radioName + "_" + Consts.fightActions.PUNCH} name={radioName} value={Consts.fightActions.PUNCH} defaultChecked={true} />
+                    <label className="noStyleLabel" htmlFor={radioName + "_" + Consts.fightRoundActions.PUNCH}>
+                        <input type="radio" id={radioName + "_" + Consts.fightRoundActions.PUNCH} name={radioName} value={Consts.fightRoundActions.PUNCH} defaultChecked={true} />
                         <img src={imgPunch} alt="punch" className="m-1" />
                     </label>
-                    <label className="noStyleLabel ml-1 mr-1" htmlFor={radioName + "_" + Consts.fightActions.TACKLE}>
-                        <input type="radio" id={radioName + "_" + Consts.fightActions.TACKLE} name={radioName} value={Consts.fightActions.TACKLE} />
+                    <label className="noStyleLabel ml-1 mr-1" htmlFor={radioName + "_" + Consts.fightRoundActions.TACKLE}>
+                        <input type="radio" id={radioName + "_" + Consts.fightRoundActions.TACKLE} name={radioName} value={Consts.fightRoundActions.TACKLE} />
                         <img src={imgTackle} alt="tackle" className="m-1" />
                     </label>
-                    <label className="noStyleLabel" htmlFor={radioName + "_" + Consts.fightActions.KICK}>
-                        <input type="radio" id={radioName + "_" + Consts.fightActions.KICK} name={radioName} value={Consts.fightActions.KICK} />
+                    <label className="noStyleLabel" htmlFor={radioName + "_" + Consts.fightRoundActions.KICK}>
+                        <input type="radio" id={radioName + "_" + Consts.fightRoundActions.KICK} name={radioName} value={Consts.fightRoundActions.KICK} />
                         <img src={imgKick} alt="kick" className="m-1" />
                     </label>
                 </div>
@@ -42,12 +42,12 @@ const IBFightSetup = ({ ReturnToSelection, user_Chat_Active, LaunchChatEvent }) 
     const OnSend = (event) => {
         event.preventDefault();
 
-        var actions = [];
+        var actionsSent = [];
         for(let i = 0; i < Consts.FIGHT_MAX_ROUNDS; i++) {
             const btns = elem_Form.elements["fightSelection_" + i];
             for(let j = 0; j < btns.length; j++) {
                 if(btns[j].checked) {
-                    actions.push(parseInt(btns[j].value));
+                    actionsSent.push(parseInt(btns[j].value));
                 }
             }
         }
@@ -76,7 +76,8 @@ const IBFightSetup = ({ ReturnToSelection, user_Chat_Active, LaunchChatEvent }) 
                     msgWin: msgWin,
                     msgLose: msgLose,
                     msgTie: msgTie,
-                    actions
+                    actionsSent,
+                    actionsResp: []
                 }             
             }, true);
         }, Consts.CE_MSG_DELAY);
