@@ -13,7 +13,8 @@ class User {
         this.unreadMsg = false,
         this.disableSend = false,
         this.messages = [],
-        this.chatEvent = null
+        this.chatEvent = null,
+        this.chatEventDisp = false;
     }
 }
 

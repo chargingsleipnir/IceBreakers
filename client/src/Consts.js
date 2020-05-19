@@ -7,9 +7,10 @@ const Consts = {
     iceBreakers: { NONE: 0, FIGHT: 1, TRAP: 2 },
     CE_MSG_DELAY: 750,
 
-    FIGHT_MAX_ROUNDS: 9,
-    fightOptions: { PUNCH: 0, TACKLE: 1, KICK: 2 },
-    fightSteps: { INIT: 0, CANCEL: 1, ACT: 2, END: 3 }
+    FIGHT_MAX_ROUNDS: 5,
+    fightActions: { PUNCH: 0, TACKLE: 1, KICK: 2 },
+    fightResults: { LOSE: -1, TIE: 0, WIN: 1 },
+    fightSteps: { INIT: 0, ACCEPT: 1, CANCEL: 2, ACT: 3, END: 4 }
 };
 
 export default Consts;

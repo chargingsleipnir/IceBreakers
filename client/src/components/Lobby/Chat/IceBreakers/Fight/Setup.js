@@ -12,6 +12,7 @@ const IBFightSetup = ({ ReturnToSelection, user_Chat_Active, LaunchChatEvent }) 
     var elem_ProvokeMsg = React.createRef();
     var elem_WinMsg = React.createRef();
     var elem_LoseMsg = React.createRef();
+    var elem_TieMsg = React.createRef();
 
     var rounds = [];
     for(let i = 0; i < Consts.FIGHT_MAX_ROUNDS; i++) {
@@ -20,16 +21,16 @@ const IBFightSetup = ({ ReturnToSelection, user_Chat_Active, LaunchChatEvent }) 
         rounds.push(
             <div key={i}>
                 <div className="d-flex justify-content-around">
-                    <label className="noStyleLabel" htmlFor={radioName + "_" + Consts.fightOptions.PUNCH}>
-                        <input type="radio" id={radioName + "_" + Consts.fightOptions.PUNCH} name={radioName} value={Consts.fightOptions.PUNCH} defaultChecked={true} />
+                    <label className="noStyleLabel" htmlFor={radioName + "_" + Consts.fightActions.PUNCH}>
+                        <input type="radio" id={radioName + "_" + Consts.fightActions.PUNCH} name={radioName} value={Consts.fightActions.PUNCH} defaultChecked={true} />
                         <img src={imgPunch} alt="punch" className="m-1" />
                     </label>
-                    <label className="noStyleLabel ml-1 mr-1" htmlFor={radioName + "_" + Consts.fightOptions.TACKLE}>
-                        <input type="radio" id={radioName + "_" + Consts.fightOptions.TACKLE} name={radioName} value={Consts.fightOptions.TACKLE} />
+                    <label className="noStyleLabel ml-1 mr-1" htmlFor={radioName + "_" + Consts.fightActions.TACKLE}>
+                        <input type="radio" id={radioName + "_" + Consts.fightActions.TACKLE} name={radioName} value={Consts.fightActions.TACKLE} />
                         <img src={imgTackle} alt="tackle" className="m-1" />
                     </label>
-                    <label className="noStyleLabel" htmlFor={radioName + "_" + Consts.fightOptions.KICK}>
-                        <input type="radio" id={radioName + "_" + Consts.fightOptions.KICK} name={radioName} value={Consts.fightOptions.KICK} />
+                    <label className="noStyleLabel" htmlFor={radioName + "_" + Consts.fightActions.KICK}>
+                        <input type="radio" id={radioName + "_" + Consts.fightActions.KICK} name={radioName} value={Consts.fightActions.KICK} />
                         <img src={imgKick} alt="kick" className="m-1" />
                     </label>
                 </div>
@@ -41,12 +42,12 @@ const IBFightSetup = ({ ReturnToSelection, user_Chat_Active, LaunchChatEvent }) 
     const OnSend = (event) => {
         event.preventDefault();
 
-        var moves = [];
+        var actions = [];
         for(let i = 0; i < Consts.FIGHT_MAX_ROUNDS; i++) {
             const btns = elem_Form.elements["fightSelection_" + i];
             for(let j = 0; j < btns.length; j++) {
                 if(btns[j].checked) {
-                    moves.push(btns[j].value);
+                    actions.push(parseInt(btns[j].value));
                 }
             }
         }
@@ -55,6 +56,7 @@ const IBFightSetup = ({ ReturnToSelection, user_Chat_Active, LaunchChatEvent }) 
         const msgProvoke = elem_ProvokeMsg.current.value;
         const msgWin = elem_WinMsg.current.value;
         const msgLose = elem_LoseMsg.current.value;
+        const msgTie = elem_TieMsg.current.value;
 
         // TODO: Validate inputs? LOW PRIORITY
         LaunchChatEvent({ 
@@ -73,7 +75,8 @@ const IBFightSetup = ({ ReturnToSelection, user_Chat_Active, LaunchChatEvent }) 
                     msgProvoke: msgProvoke,
                     msgWin: msgWin,
                     msgLose: msgLose,
-                    moves
+                    msgTie: msgTie,
+                    actions
                 }             
             }, true);
         }, Consts.CE_MSG_DELAY);
@@ -100,6 +103,10 @@ const IBFightSetup = ({ ReturnToSelection, user_Chat_Active, LaunchChatEvent }) 
                         <div className="form-group">
                             <div className="head4 text-light">Lose message</div>
                             <input type="text" className="form-control" ref={elem_LoseMsg} placeholder="e.g. Pfft, barely a flesh wound..."></input>
+                        </div>
+                        <div className="form-group">
+                            <div className="head4 text-light">Tie message</div>
+                            <input type="text" className="form-control" ref={elem_TieMsg} placeholder="e.g. Did we just become best friends?"></input>
                         </div>
                         <button type="button" className="btn bgLightBlue text-white m-0Auto innerScrollItem" onClick={OnSend}>Send</button>
                     </form>

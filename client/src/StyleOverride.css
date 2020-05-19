@@ -94,6 +94,9 @@ html, body, #root {
     display: inline-block;
     max-width: 80%;
 }
+.messageBox.fullW {
+    width: 80%;
+}
 .messageBox.fromSelf {
     border-radius: 17px 10px 0 17px;
 }

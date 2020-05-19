@@ -94,13 +94,25 @@ class Chat extends Component {
 
             var chatEvent = "";
             //console.log(this.props.user_Chat)
-            if(this.props.user_Chat.chatEvent) {
+            if(this.props.user_Chat.chatEvent && this.props.user_Chat.chatEventDisp) {
                 const evt = this.props.user_Chat.chatEvent;
                 //console.log(evt.type)
                 if(evt.type === Consts.msgTypes.CE_FIGHT)
-                    chatEvent = <IBFightEngage eventData={evt} SendMessage={this.props.SendMessage} ClearEvent={this.props.ClearEvent} />;
+                    chatEvent = <IBFightEngage 
+                        eventData={evt} 
+                        SendMessage={this.props.SendMessage} 
+                        UpdateEventData={this.props.UpdateEventData} 
+                        ClearEvent={this.props.ClearEvent} 
+                        chatPtnrName={this.props.user_Chat.name} 
+                    />;
                 else if(evt.type === Consts.msgTypes.CE_FIGHT)
-                    chatEvent = <IBTrapEngage eventData={evt} SendMessage={this.props.SendMessage} ClearEvent={this.props.ClearEvent} />;
+                    chatEvent = <IBTrapEngage 
+                        eventData={evt} 
+                        SendMessage={this.props.SendMessage} 
+                        UpdateEventData={this.props.UpdateEventData} 
+                        ClearEvent={this.props.ClearEvent} 
+                        chatPtnrName={this.props.user_Chat.name} 
+                    />;
             }
 
             return (

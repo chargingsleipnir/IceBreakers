@@ -64,10 +64,12 @@ class PageSelection extends Component {
                 // Hold event in seperate container while it's running, and build messages up as it executes.
                 if(recObj.isEvent) {
                     prevState.users[changeIndex].chatEvent = moddedMsgObj;
+                    prevState.users[changeIndex].chatEventDisp = true;
                     prevState.users[changeIndex].disableSend = true;
                 }
                 else {
                     prevState.users[changeIndex].messages.push(moddedMsgObj);
+                    prevState.users[changeIndex].chatEventDisp = false;
                 }
 
                 var unreadMsg = true;
@@ -83,6 +85,22 @@ class PageSelection extends Component {
                     user_Chat: unreadMsg === false ? prevState.users[changeIndex] : null
                 }
             }); 
+        });
+
+        props.socket.on('RecUpdateEvent', (recObj) => {
+            this.setState((prevState) => {
+                let changeIndex = prevState.users.findIndex(({ id }) => id === recObj.chatPtnrID);
+                var moddedMsgObj = { ...prevState.users[changeIndex].chatEvent, fromSelf: false };
+                moddedMsgObj.data = { ...moddedMsgObj.data, ...recObj.updatedData };
+
+                prevState.users[changeIndex].chatEvent = moddedMsgObj;
+                prevState.users[changeIndex].chatEventDisp = true;
+
+                return { 
+                    users: prevState.users,
+                    user_Chat: prevState.users[changeIndex]
+                } 
+            });
         });
 
         props.socket.on('RecClearEvent', (chatPtnrID) => {
@@ -102,6 +120,7 @@ class PageSelection extends Component {
         this.LikeUserToggle = this.LikeUserToggle.bind(this);
         this.ToPageChat = this.ToPageChat.bind(this);
         this.SendMessage = this.SendMessage.bind(this);
+        this.UpdateEventData = this.UpdateEventData.bind(this);
         this.ClearEvent = this.ClearEvent.bind(this);
     }
 
@@ -133,7 +152,7 @@ class PageSelection extends Component {
         
         this.props.socket.emit('SendMessage', {
             msgData: { ...msgData, chatPtnrID: this.state.user_Chat.id },
-            isEvent 
+            isEvent
         });
 
         this.setState((prevState) => {
@@ -143,13 +162,40 @@ class PageSelection extends Component {
 
             if(isEvent) {
                 prevState.users[changeIndex].chatEvent = moddedMsgObj;
+                prevState.users[changeIndex].chatEventDisp = true;
                 prevState.users[changeIndex].disableSend = true;
             }
             else {
                 prevState.users[changeIndex].messages.push(moddedMsgObj);
+                prevState.users[changeIndex].chatEventDisp = false;
             }
 
             //console.log(prevState);
+
+            return { 
+                users: prevState.users,
+                user_Chat: prevState.users[changeIndex]
+            } 
+        });
+    }
+
+    // Update my own message view, not required from server
+    UpdateEventData (updatedData) {
+        this.props.socket.emit('UpdateEvent', { 
+            updatedData,
+            chatPtnrID: this.state.user_Chat.id 
+        });
+
+        this.setState((prevState) => {
+            
+            let changeIndex = prevState.users.findIndex(({ id }) => id === prevState.user_Chat.id);
+            var moddedMsgObj = { ...prevState.users[changeIndex].chatEvent, fromSelf: true };
+            moddedMsgObj.data = { ...moddedMsgObj.data, ...updatedData };
+
+            prevState.users[changeIndex].chatEvent = moddedMsgObj;
+            prevState.users[changeIndex].chatEventDisp = true;
+
+            console.log(prevState.users[changeIndex].chatEvent);
 
             return { 
                 users: prevState.users,
@@ -190,6 +236,7 @@ class PageSelection extends Component {
                 user_Chat={this.state.user_Chat}
                 user_Chat_Active={user_Chat_Active}
                 SendMessage={this.SendMessage}
+                UpdateEventData={this.UpdateEventData}
                 ClearEvent={this.ClearEvent}
                 ToPageUsers={this.ToPageUsers}
             />);

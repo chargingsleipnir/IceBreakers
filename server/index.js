@@ -56,6 +56,13 @@ io.on("connection", (socket) => {
         });
     });
 
+    socket.on('UpdateEvent', ( data ) => {
+        io.to(data.chatPtnrID).emit('RecUpdateEvent', {
+            updatedData: data.updatedData,
+            chatPtnrID: socket.id
+        });
+    });
+
     socket.on('ClearEvent', ( chatPtnrID ) => {
         io.to(chatPtnrID).emit('RecClearEvent', socket.id);
     });
