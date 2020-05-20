@@ -3,11 +3,12 @@ const { GetImage, RemoveImage } = require('./imageHdlr.js');
 const users = [];
 
 class User {
-    constructor(id, name, imgExt) {
+    constructor(id, name, imgExt, imgIsPortrait) {
         this.id = id || '', 
         this.name = name || '',
         this.imgExt = imgExt || '',
         this.imgSrc = null,
+        this.isPortrait = imgIsPortrait,
         this.likeThem = false,
         this.likesMe = false,
         this.unreadMsg = false,
@@ -18,7 +19,7 @@ class User {
     }
 }
 
-const AddUser = ({ id, name, ext }) => {
+const AddUser = ({ id, name, ext, isPortrait }) => {
 
     //console.log(`Adding user id: "${id}", name: "${name}"`);
     const existingUser = users.find((user) => user.id === id);
@@ -27,7 +28,7 @@ const AddUser = ({ id, name, ext }) => {
     }
 
     // Create user
-    const user = new User(id, name, ext);
+    const user = new User(id, name, ext, isPortrait);
     users.push(user);
 
     if(ext)

@@ -17,8 +17,8 @@ io.on("connection", (socket) => {
     console.log(`Socket connection established: ${socket.id}`);
 
     // "ext" is not just the extension of the user's image, but acting as an indicator as to whether or not the user even did upload one.
-    socket.on('AddUser', ({ name, ext }, Callback) => {
-        const user = AddUser({ id: socket.id, name, ext });
+    socket.on('AddUser', ({ name, ext, isPortrait }, Callback) => {
+        const user = AddUser({ id: socket.id, name, ext, isPortrait });
 
         if(!user)
             console.log("Username is taken");

@@ -5,10 +5,7 @@ import LoadBar from './LoadBar';
 let URL = window.URL || window.webkitURL;
 const extArr = ['jpg', 'jpeg', 'png', 'gif'];
 
-// TODO: Reset src to default guy on error
-// TODO: Reset file input to null value on error
-
-const ImgUpload = ({ GetImgDetails, imgSrc, disabled, willLoadFile, percent }) => {
+const ImgUpload = ({ GetImgDetails, imgSrc, isPortrait, disabled, willLoadFile, percent }) => {
 
     const imgChange = (event) => {
         // Make sure only 1 file has been uploaded
@@ -28,21 +25,21 @@ const ImgUpload = ({ GetImgDetails, imgSrc, disabled, willLoadFile, percent }) =
         let file = event.target.files[0];
 
         var img = new Image();
-        img.onload = () => { console.log("img width: " + img.width + ", height: " + img.height); };
+        img.onload = () => { 
+            console.log("img width: " + img.width + ", height: " + img.height);
+            GetImgDetails(ext, file, img.src, img.height > img.width);
+        };
         img.src = URL.createObjectURL(file);
-
-        GetImgDetails(ext, file, img.src);
     };
 
     const html_LoadBar = willLoadFile ? <LoadBar percent={percent} /> : "";
-
     //console.log(`Main body called in ImgUpload.js`);
 
     return (
         <div className="mt-2">
             {/* Container exists so that the image can keep it's aspect ratio and just can cut-off/masked by the container */}
-            <div id="AvatarSelected" className="rounded-circle mt-1 mb-1 mt-md-3 mb-md-3 mt-lg-5 mb-lg-5">
-                <img src={imgSrc} alt="User avatar" />
+            <div id="AvatarSelected" className="avatarsUserIdent rounded-circle mt-1 mb-1 mt-md-3 mb-md-3 mt-lg-5 mb-lg-5">
+                <img src={imgSrc} alt="User avatar" className={isPortrait ? "portrait" : ""} />
             </div>
 
             <input id="HiddenFileUploader" placeholder="File" className="d-none" type="file" accept="image/*" capture="user" onChange={imgChange} disabled={disabled} />

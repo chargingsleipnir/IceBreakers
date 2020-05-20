@@ -27,6 +27,7 @@ class Join extends Component {
         this.nameField = React.createRef();
         this.fileExt = '';
         this.fileSrc = defaultImg;
+        this.isPortrait = false;
 
         this.slice = null;
         this.fileReader = null;
@@ -49,6 +50,7 @@ class Join extends Component {
             alert("Error uploading image, restoring default, my bad. :(");
             this.fileExt = '';
             this.fileSrc = defaultImg;
+            this.isPortrait = false;
             this.setState({
                 file: null,
                 disabled: false,
@@ -63,7 +65,7 @@ class Join extends Component {
                     percent: 100
                 });
 
-                socket.emit('AddUser', { name: this.nameField.current.value, ext: this.fileExt }, () => {
+                socket.emit('AddUser', { name: this.nameField.current.value, ext: this.fileExt, isPortrait: this.isPortrait }, () => {
                     this.setState({ signedIn: true });
                 });
             };
@@ -86,11 +88,11 @@ class Join extends Component {
 
         this.setState({ disabled: true });
 
-        console.log(`Submit clicked - Name: ${name}, Ext: ${this.fileExt}, src: ${this.fileSrc}, file:`, this.state.file);
+        console.log(`Submit clicked - Name: ${name}, Ext: ${this.fileExt}, src: ${this.fileSrc}, isPortrait: ${this.isPortrait}, file:`, this.state.file);
 
 
         if(this.state.file === null) {
-            socket.emit('AddUser', { name, ext: this.fileExt }, () => {
+            socket.emit('AddUser', { name, ext: this.fileExt, isPortrait: this.isPortrait }, () => {
                 this.setState({ signedIn: true });
             });
         }
@@ -105,10 +107,11 @@ class Join extends Component {
         }
     };
 
-    GetImgDetails (ext, file, src) {
-        console.log(`Ext: ${ext}, src: ${src}, file:`, file);
+    GetImgDetails (ext, file, src, isPortrait) {
+        console.log(`Ext: ${ext}, src: ${src}, isPortrait: ${isPortrait}, file:`, file);
         this.fileExt = ext;
         this.fileSrc = src;
+        this.isPortrait = isPortrait;
         this.setState({ file });
     };
 
@@ -132,7 +135,7 @@ class Join extends Component {
                         </div>
 
                         <div>
-                            <ImgUpload GetImgDetails={this.GetImgDetails} imgSrc={this.fileSrc} disabled={this.state.disabled} willLoadFile={willLoadFile} percent={this.state.percent} />
+                            <ImgUpload GetImgDetails={this.GetImgDetails} imgSrc={this.fileSrc} isPortrait={this.isPortrait} disabled={this.state.disabled} willLoadFile={willLoadFile} percent={this.state.percent} />
                             <button className="btn btn-primary btn-lg btn-block mt-2" onClick={this.SubmitProfile} disabled={this.state.disabled}>Sign In</button>
                         </div>
                     </div>

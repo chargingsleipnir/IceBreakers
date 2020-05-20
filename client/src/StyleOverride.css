@@ -31,21 +31,33 @@ html, body, #root {
     size: 1em;
 }
 
+.avatarsUserIdent {
+    width: 50px;
+    height: 50px;
+    overflow: hidden;
+    position: relative;
+}
 #AvatarSelected {
     width: 70vw;
     height: 70vw;
     max-width: 256px;
     max-height: 256px;
-    overflow: hidden;
 }
-.avatarsUserIdent {
-    width: 50px;
-    height: 50px;
-    overflow: hidden;
+.avatarsUserIdent > img {
+    height: 100%;
+    width: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
 }
-#AvatarSelected > img, .avatarsUserIdent > img {
+.avatarsUserIdent > img.portrait {
+    height: auto;
     width: 100%;
-    object-fit: cover;
 }
 
 
