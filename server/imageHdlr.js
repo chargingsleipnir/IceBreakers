@@ -1,5 +1,5 @@
 var fs = require('fs');
-var Consts = require('./Shared/Consts.js');
+var Consts = require('./Consts.js');
 
 // Container for any/all images being uploaded at one time.
 var uploads = {};

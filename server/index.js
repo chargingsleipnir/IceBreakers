@@ -78,7 +78,8 @@ io.on("connection", (socket) => {
 
 // ROUTES -----
 app.use(express.static(__dirname + '/Client'));
-app.use(express.static(__dirname + '/Shared'));
+//! Unable to make a react build that uses this common folder's contents, at least for now
+//app.use(express.static(__dirname + '/Shared'));
 
 const router = require('./router');
 app.use(router);
