@@ -1,6 +1,5 @@
 import React from 'react';
 import UserIdent from '../UserIdent';
-import Consts from '../../../Consts';
 
 const User = ({user, LikeUserToggle, ToPageChat}) => {
 

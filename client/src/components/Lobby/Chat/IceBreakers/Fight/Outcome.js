@@ -59,7 +59,7 @@ const IBFightOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
         );
     }
     else if(data.step === Consts.fightSteps.CANCEL) {
-        
+
         const msg = fromSelf ? `You wimped out.` : `${chatPtnrName} wimped out.`;
         return (
             <div className="d-flex justify-content-center mt-2">

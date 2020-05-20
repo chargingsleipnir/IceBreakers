@@ -41,7 +41,7 @@ class IceBreakerSelection extends Component {
                                 <span className="ml-4">FIGHT</span>
                             </button>
                             {/* TRAP */}
-                            <button
+                            {/* <button
                                 type="button"
                                 className="btn btn-lg bgLightBlue text-white m-0Auto mt-2 minW50pct maxW1000 innerScrollItem"
                                 onClick={() => this.setState({ iceBreaker: Consts.iceBreakers.TRAP })}
@@ -49,7 +49,7 @@ class IceBreakerSelection extends Component {
                             >
                                 <i className="fas fa-dungeon fa-lg"></i>
                                 <span className="ml-4">TRAP</span>
-                            </button>
+                            </button> */}
                         </ScrollToBottom>
                     </div>
                 </div>
