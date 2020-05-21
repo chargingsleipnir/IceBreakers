@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactEmoji from 'react-emoji';
-import Consts from '../../../../../Consts';
+import * as Consts from '../../../../../Consts';
 
 import imgPunch from '../../../../../images/Punch_02_32x32.png';
 import imgTackle from '../../../../../images/Tackle_01_32x32.png';

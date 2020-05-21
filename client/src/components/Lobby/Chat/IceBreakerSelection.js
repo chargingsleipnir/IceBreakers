@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ScrollToBottom from 'react-scroll-to-bottom';
-import Consts from '../../../Consts';
+import * as Consts from '../../../Consts';
 import PageTitleBar from './PageTitleBar';
 import IBFightSetup from './IceBreakers/Fight/Setup';
 import IBTrapSetup from './IceBreakers/Trap/Setup';

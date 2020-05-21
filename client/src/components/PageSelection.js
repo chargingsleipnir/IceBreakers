@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Consts from '../Consts';
+import * as Consts from '../Consts';
 import Users from './Lobby/Users/Users';
 import Chat from './Lobby/Chat/Chat';
 
@@ -23,6 +23,10 @@ class PageSelection extends Component {
         props.socket.on("RemoveUser", (userID) => {
             console.log(`Removing user: "${userID}"`);
             let removeIndex = this.state.users.findIndex((user) => user.id === userID);
+
+            if(removeIndex === -1)
+                return;
+
             this.state.users.splice(removeIndex, 1);
             this.setState({ users: this.state.users });
 

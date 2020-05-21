@@ -54,6 +54,8 @@ html, body, #root {
     -ms-transform: translate(-50%, -50%);
     -o-transform: translate(-50%, -50%);
     -webkit-transform: translate(-50%, -50%);
+
+    image-orientation: from-image;
 }
 .avatarsUserIdent > img.portrait {
     height: auto;

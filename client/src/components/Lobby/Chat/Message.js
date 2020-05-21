@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactEmoji from 'react-emoji';
-import Consts from '../../../Consts';
+import * as Consts from '../../../Consts';
 import IBFightOutcome from './IceBreakers/Fight/Outcome';
 import IBTrapOutcome from './IceBreakers/Trap/Outcome';
 

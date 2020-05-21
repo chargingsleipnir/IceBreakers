@@ -4,17 +4,18 @@ const users = [];
 
 class User {
     constructor(id, name, imgExt, imgIsPortrait) {
-        this.id = id || '', 
-        this.name = name || '',
-        this.imgExt = imgExt || '',
-        this.imgSrc = null,
-        this.isPortrait = imgIsPortrait,
-        this.likeThem = false,
-        this.likesMe = false,
-        this.unreadMsg = false,
-        this.disableSend = false,
-        this.messages = [],
-        this.chatEvent = null,
+        this.id = id || '';
+        this.name = name || '';
+        this.imgDataURL = null;
+        this.imgExt = imgExt || '';
+        this.imgSrc = null;
+        this.isPortrait = imgIsPortrait;
+        this.likeThem = false;
+        this.likesMe = false;
+        this.unreadMsg = false;
+        this.disableSend = false;
+        this.messages = [];
+        this.chatEvent = null;
         this.chatEventDisp = false;
     }
 }
