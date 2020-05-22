@@ -81,7 +81,7 @@ const IBTrapEngage = ({ eventData: { fromSelf, data }, SendMessage, UpdateEventD
                     <div className="messageBox bgLightBlue fromAdmin">
                         <div className="messageText text-center text-white">It's a trap!</div>
                         <div className="d-flex justify-content-around mt-1 p-2">
-                            <button className="btn bg-warning" onClick={OnBtnStruggle}>STRUGGLE!!</button>
+                            <button className="btn btn-lg colourFlash font-weight-bold" onClick={OnBtnStruggle}>STRUGGLE!!</button>
                         </div>
                     </div>
                 </div>

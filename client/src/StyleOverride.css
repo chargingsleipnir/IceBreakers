@@ -185,3 +185,26 @@ small {
     display: block;
     font-size: 66%;
 }
+
+
+.colourFlash {
+    animation: blinkingButton 0.25s infinite;
+}
+@keyframes blinkingButton {
+    0% {
+        background-color: black;
+        color: white;
+    }
+    49% {
+        background-color: black;
+        color: white;
+    }
+    50% {
+        background-color: white;
+        color: black;
+    }
+    99% {
+        background-color: white;
+        color: black;
+    }
+}

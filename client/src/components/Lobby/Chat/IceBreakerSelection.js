@@ -47,8 +47,9 @@ class IceBreakerSelection extends Component {
                                 onClick={() => this.setState({ iceBreaker: Consts.iceBreakers.TRAP })}
                                 disabled={!this.props.user_Chat_Active}
                             >
-                                <i className="fas fa-dungeon fa-lg"></i>
-                                <span className="ml-4">TRAP</span>
+                                {/*<i className="fas fa-dungeon fa-lg"></i>*/}
+                                <i className="fas fa-gift fa-lg"></i>
+                                <span className="ml-4">GIFT</span>
                             </button>
                         </ScrollToBottom>
                     </div>
