@@ -105,7 +105,7 @@ class Chat extends Component {
                         ClearEvent={this.props.ClearEvent} 
                         chatPtnrName={this.props.user_Chat.name} 
                     />;
-                else if(evt.type === Consts.msgTypes.CE_FIGHT)
+                else if(evt.type === Consts.msgTypes.CE_TRAP)
                     chatEvent = <IBTrapEngage 
                         eventData={evt} 
                         SendMessage={this.props.SendMessage} 

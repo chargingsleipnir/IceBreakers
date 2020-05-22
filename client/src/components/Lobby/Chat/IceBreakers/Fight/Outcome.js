@@ -64,7 +64,7 @@ const IBFightOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
         return (
             <div className="d-flex justify-content-center mt-2">
                 <div className="messageBox bgLightBlue text-center fromAdmin">
-                    <div className="messageText text-white">{msg}</div>
+                    <div className="messageText text-white">{ReactEmoji.emojify(msg)}</div>
                 </div>
             </div>
         );

@@ -48,8 +48,12 @@ io.on("connection", (socket) => {
             socket.emit('ImageReqSlice', { currentSlice: slice });
     });
 
+    var test = 0;
     socket.on('SendMessage', ( data ) => {
         //console.log(`Message received at server: isEvent: ${data.isEvent}, msgType: ${data.msgData.type}.`);
+        
+        console.log("message sent: ", test++);
+
         io.to(data.msgData.chatPtnrID).emit('RecMessage', { 
             msgData: {...data.msgData, chatPtnrID: socket.id},
             isEvent: data.isEvent
