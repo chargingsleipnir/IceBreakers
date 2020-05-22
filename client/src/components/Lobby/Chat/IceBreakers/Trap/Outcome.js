@@ -14,7 +14,7 @@ const IBTrapOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
 
     if(data.step === Consts.trapSteps.INIT) {
 
-        const msg = fromSelf ? `You sent ${chatPtnrName} ${ReactEmoji.emojify(data.bait)}!` : `${chatPtnrName} sent you ${ReactEmoji.emojify(data.bait)}!`;
+        const msg = fromSelf ? `You sent ${chatPtnrName} ${ReactEmoji.emojify(data.gift)}!` : `${chatPtnrName} sent you ${ReactEmoji.emojify(data.gift)}!`;
         return (
             <div className="d-flex justify-content-center mt-2">
                 <div className="messageBox bgLightBlue text-center fromAdmin">

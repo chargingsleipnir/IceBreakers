@@ -11,9 +11,18 @@ const IBTrapEngage = ({ eventData: { fromSelf, data }, SendMessage, UpdateEventD
             data: { step: Consts.trapSteps.ACCEPT }              
         }, false);
 
-        setTimeout(() => {
-            UpdateEventData({ step: Consts.trapSteps.STRUGGLE });
-        }, Consts.CE_MSG_DELAY);
+        
+        const randNum = Math.floor(Math.random() * 100) + 1;
+        const launchTrap = data.sliderPct >= randNum;
+
+        if(launchTrap) {
+            setTimeout(() => {
+                UpdateEventData({ step: Consts.trapSteps.STRUGGLE });
+            }, Consts.CE_MSG_DELAY);
+        }
+        else {
+            ClearEvent();
+        }
     }
 
     const OnBtnReject = (event) => {

@@ -186,6 +186,9 @@ small {
     font-size: 66%;
 }
 
+.w50p {
+    width: 50px;
+}
 
 .colourFlash {
     animation: blinkingButton 0.25s infinite;
