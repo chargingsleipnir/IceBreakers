@@ -190,6 +190,25 @@ small {
     width: 50px;
 }
 
+#CanvasDrawContainer, #CanvasControlsContainer {
+    width: 100%;
+    min-width: 255px;
+    max-width: 300px;
+    height: 300px;
+    padding: 5px;
+}
+#CanvasControlsContainer {
+    height: 100%;
+    text-align: center;
+}
+#DrawComponentContainer {
+    width: 100%;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
+}
+
 .colourFlash {
     animation: blinkingButton 0.25s infinite;
 }
