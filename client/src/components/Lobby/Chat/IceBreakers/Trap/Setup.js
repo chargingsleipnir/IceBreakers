@@ -25,7 +25,8 @@ const IBTrapSetup = ({ ReturnToSelection, user_Chat_Active, LaunchChatEvent }) =
         event.preventDefault();
 
         // Cache values so setTimeout can use them despite being gone from original source.
-        const textGift = elem_GiftText.current.value;
+        const giftText = elem_GiftText.current.value;
+        const giftCanvasSaveData = canvasRef.current.getSaveData();
         const msgSuccess = elem_SuccessMsg.current.value;
         const msgFail = elem_FailMsg.current.value;
 
@@ -34,7 +35,7 @@ const IBTrapSetup = ({ ReturnToSelection, user_Chat_Active, LaunchChatEvent }) =
             type: Consts.msgTypes.CE_TRAP,
             data: {
                 step: Consts.trapSteps.INIT,
-                gift: textGift
+                giftText
             }              
         }, false);
 
@@ -44,7 +45,8 @@ const IBTrapSetup = ({ ReturnToSelection, user_Chat_Active, LaunchChatEvent }) =
                 data: {
                     step: Consts.trapSteps.INIT,
                     sliderPct,
-                    textGift,
+                    giftText,
+                    giftCanvasSaveData,
                     msgSuccess,
                     msgFail
                 }             
@@ -73,13 +75,14 @@ const IBTrapSetup = ({ ReturnToSelection, user_Chat_Active, LaunchChatEvent }) =
                             <input type="text" className="form-control" ref={elem_GiftText} placeholder="e.g. 5 cents"></input>
                             <div id="DrawComponentContainer" className="mt-3">
                                 {/* Canvas */}
-                                <div id="CanvasDrawContainer">
+                                <div className="m-2">
                                     <CanvasDraw 
                                         ref={canvasRef}
-                                        canvasWidth="100%" 
-                                        canvasHeight="100%" 
+                                        canvasWidth="250px" 
+                                        canvasHeight="250px" 
+                                        lazyRadius="5"
                                         brushColor={colour}
-                                        brushRadius={brushRadius}
+                                        brushRadius={(isNaN(brushRadius) || brushRadius < 1) ? 1 : brushRadius}
                                     />
                                 </div>
                                 <div id="CanvasControlsContainer" className="mt-2">
@@ -97,9 +100,7 @@ const IBTrapSetup = ({ ReturnToSelection, user_Chat_Active, LaunchChatEvent }) =
                                             <input type="number"
                                                 className="form-control"
                                                 value={brushRadius}
-                                                onChange={e =>
-                                                    SetBrushRadius(parseInt(e.target.value, 10))
-                                                }
+                                                onChange={e => SetBrushRadius(parseInt(e.target.value, 10) || '')}
                                             />
                                         </div>
                                     </div>

@@ -13,7 +13,7 @@ export const fightSteps = { INIT: 0, ACCEPT: 1, CANCEL: 2, ACT: 3, END: 4 };
 
 export const trapSteps = { INIT: 0, ACCEPT: 1, REJECT: 2, STRUGGLE: 3, END: 4 };
 export const TRAP_STRUGGLE_TIME = 3000;
-export const TRAP_STRUGGLE_COUNT = 17;
+export const TRAP_STRUGGLE_COUNT = 15;
 
 export const GetOrientation = (file, callback) => {
     var reader = new FileReader();

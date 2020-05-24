@@ -58,7 +58,7 @@ class PageSelection extends Component {
         // Data sent to the message component, where it's read and deciphered and html is built
 
         props.socket.on('RecMessage', (recObj) => {
-            console.log(`Received message, type: "${recObj.msgData.type}" chatting with user: "${recObj.msgData.chatPtnrID}", with data:`, recObj.msgData.data);
+            //console.log(`Received message, type: "${recObj.msgData.type}" chatting with user: "${recObj.msgData.chatPtnrID}", with data:`, recObj.msgData.data);
             
             this.setState((prevState) => {
 

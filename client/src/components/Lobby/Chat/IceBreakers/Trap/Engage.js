@@ -6,14 +6,17 @@ const IBTrapEngage = ({ eventData: { fromSelf, data }, SendMessage, UpdateEventD
     const OnBtnAccept = (event) => {
         event.preventDefault();
 
-        SendMessage({ 
-            type: Consts.msgTypes.CE_TRAP,
-            data: { step: Consts.trapSteps.ACCEPT }              
-        }, false);
-
-        
         const randNum = Math.floor(Math.random() * 100) + 1;
         const launchTrap = data.sliderPct >= randNum;
+
+        SendMessage({ 
+            type: Consts.msgTypes.CE_TRAP,
+            data: { 
+                step: Consts.trapSteps.ACCEPT,
+                launchTrap,
+                giftCanvasSaveData: data.giftCanvasSaveData
+            }             
+        }, false);
 
         if(launchTrap) {
             setTimeout(() => {
@@ -80,6 +83,7 @@ const IBTrapEngage = ({ eventData: { fromSelf, data }, SendMessage, UpdateEventD
                     data: { 
                         step: Consts.trapSteps.END,
                         trapSuccess: btnPresses < Consts.TRAP_STRUGGLE_COUNT,
+                        giftCanvasSaveData: data.giftCanvasSaveData,
                         msgEnd
                     }
                 }, false);
