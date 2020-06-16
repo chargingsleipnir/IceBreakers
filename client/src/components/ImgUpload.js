@@ -1,5 +1,4 @@
 import React from 'react';
-
 import LoadBar from './LoadBar';
 
 const URL = window.URL || window.webkitURL;
