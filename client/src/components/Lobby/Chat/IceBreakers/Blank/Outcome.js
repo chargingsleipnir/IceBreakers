@@ -57,7 +57,7 @@ const IBBlankOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
 
         return (
             <div className="d-flex justify-content-center mt-2">
-                <div className="messageBox fullW bgLightBlue fromAdmin"> {/*// TODO: Add "fullW" ? */}
+                <div className="width80Pct">
                     <div className="small text-light">{data.guessMatch ? "Match!" : "No match"}</div>
                     {msgBlankFilled}
                     {msgBlankGuessed}

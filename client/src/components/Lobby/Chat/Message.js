@@ -12,13 +12,13 @@ const Message = ({ message, chatPtnrName }) => {
         return (
             message.fromSelf ? (
                 <div className="d-flex justify-content-end mt-2">
-                    <div className="messageBox bgLightGreen fromSelf">
+                    <div className="outerBox messageBox bgLightGreen fromSelf">
                         <div className="messageText">{ReactEmoji.emojify(message.data)}</div>
                     </div>
                 </div>
             ) : (
                 <div className="d-flex justify-content-start mt-2">
-                    <div className="messageBox bg-white fromOther">
+                    <div className="outerBox messageBox bg-white fromOther">
                         <div className="messageText">{ReactEmoji.emojify(message.data)}</div>
                     </div>
                 </div>

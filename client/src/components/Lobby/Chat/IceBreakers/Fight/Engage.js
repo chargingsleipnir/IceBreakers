@@ -129,15 +129,15 @@ const IBFightEngage = ({ eventData: { fromSelf, data }, SendMessage, UpdateEvent
         return (
            fromSelf ? (
                 <div className="d-flex justify-content-center mt-2">
-                    <div className="messageBox bgLightBlue fromAdmin">
+                    <div>
                         <div className="messageText text-center text-white">Awaiting response...</div>
                     </div>
                 </div>
             ) : (
                 <div className="d-flex justify-content-center mt-2">
-                    <div className="messageBox bgLightBlue fromAdmin">
+                    <div className="messageBox">
                         <div className="messageText text-center text-white">Your response?</div>
-                        <div className="d-flex justify-content-around mt-1 p-2">
+                        <div className="d-flex justify-content-around bgLightBlue mt-1 p-2">
                             <button className="btn bg-warning mr-3" onClick={OnBtnFight}>Fight</button>
                             <button className="btn bg-danger text-white" onClick={OnBtnFlee}>Flee</button>
                         </div>
@@ -167,7 +167,7 @@ const IBFightEngage = ({ eventData: { fromSelf, data }, SendMessage, UpdateEvent
                 </div>
             ) : (
                 <div className="d-flex justify-content-center mt-2">
-                    <div className="messageBox bgLightBlue fromAdmin">
+                    <div>
                         <div className="messageText text-center text-white">{chatPtnrName} is selecting a move...</div>
                     </div>
                 </div>

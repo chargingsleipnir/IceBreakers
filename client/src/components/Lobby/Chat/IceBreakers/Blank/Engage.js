@@ -86,13 +86,13 @@ const IBBlankEngage = ({ eventData: { fromSelf, data }, SendMessage, UpdateEvent
         return (
            fromSelf ? (
                 <div className="d-flex justify-content-center mt-2">
-                    <div className="messageBox bgLightBlue fromAdmin">
+                    <div className="outerBox">
                         <div className="messageText text-center text-white">Awaiting response...</div>
                     </div>
                 </div>
             ) : (
                 <div className="d-flex justify-content-center mt-2">
-                    <div className="messageBox bgLightBlue fromAdmin">
+                    <div className="outerBox messageBox bgLightBlue fromAdmin">
                         <div className="messageText text-center text-white">Give it a try?</div>
                         <div className="d-flex justify-content-around mt-1 p-2">
                             <button className="btn bg-warning mr-3" onClick={OnBtnTry}>Try</button>

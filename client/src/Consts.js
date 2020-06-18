@@ -9,6 +9,7 @@ export const CE_MSG_DELAY = 750;
 export const FIGHT_MAX_ROUNDS = 5;
 export const fightRoundActions = { PUNCH: 0, TACKLE: 1, KICK: 2 };
 export const fightWinner = { SENDER: 0, RESPONDER: 1, TIE: 2 };
+export const fightOutcome = { WIN: 1, LOSE: -1, TIE: 0 };
 export const fightSteps = { INIT: 0, ACCEPT: 1, CANCEL: 2, ACT: 3, END: 4 };
 
 export const TRAP_STRUGGLE_TIME = 3000;

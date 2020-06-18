@@ -17,14 +17,13 @@ const IBFightOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
             return imgKick;
     }
 
-    // "Self" - the person who sent these messages, is the fight responder
-    const GetRoundResultMessage = (roundWinner) => {
+    const GetRoundResult = (roundWinner) => {
         if(roundWinner === Consts.fightWinner.SENDER)
-            return fromSelf ? "Ouch!" : "Nice!";
+            return fromSelf ? Consts.fightOutcome.LOSE : Consts.fightOutcome.WIN;
         else if(roundWinner === Consts.fightWinner.RESPONDER)
-            return fromSelf ? "Nice!" : "Ouch!";
+            return fromSelf ? Consts.fightOutcome.WIN : Consts.fightOutcome.LOSE;
         else if(roundWinner === Consts.fightWinner.TIE)
-            return "Oof...";
+            return Consts.fightOutcome.TIE;
     }
 
     // "Self" - the person who sent these messages, is the fight responder
@@ -39,12 +38,23 @@ const IBFightOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
 
     if(data.step === Consts.fightSteps.INIT) {
 
-        const msg = fromSelf ? `You challenged ${chatPtnrName} to a fight!` : `${chatPtnrName} challenged you to a fight!`;
+        let msg = ``;
+        let msgOriginRef = ``;
+
+        if(fromSelf) {
+            msg = `You challenged ${chatPtnrName} to a fight!`;
+            msgOriginRef = `fromAdminOfSelf`;
+        }
+        else {
+            msg = `${chatPtnrName} challenged you to a fight!`;
+            msgOriginRef = `fromAdminOfOther`;
+        }
+
         return (
             <div className="d-flex justify-content-center mt-2">
-                <div className="messageBox bgLightBlue text-center fromAdmin">
-                    <div className="messageText text-white">{msg}</div>
-                    <div className="messageText text-white">"{ReactEmoji.emojify(data.msgProvoke)}"</div>
+                <div className="outerBox text-center">
+                    <div className="messageText fontSize90 text-white">{msg}</div>
+                    <div className={`messageBox messageText mt-2 ${msgOriginRef}`}>{ReactEmoji.emojify(data.msgProvoke)}</div>
                 </div>
             </div>
         );
@@ -52,7 +62,7 @@ const IBFightOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
     else if(data.step === Consts.fightSteps.ACCEPT) {
         return (
             <div className="d-flex justify-content-center mt-2">
-                <div className="messageBox bgLightBlue text-center fromAdmin">
+                <div className="text-center fontSize90">
                     <div className="messageText text-white">Challenge accepted!</div>
                 </div>
             </div>
@@ -62,8 +72,8 @@ const IBFightOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
 
         const msg = fromSelf ? `You wimped out.` : `${chatPtnrName} wimped out.`;
         return (
-            <div className="d-flex justify-content-center mt-2">
-                <div className="messageBox bgLightBlue text-center fromAdmin">
+            <div className="d-flex justify-content-center mt-2 mb-3">
+                <div className="text-center fontSize90">
                     <div className="messageText text-white">{ReactEmoji.emojify(msg)}</div>
                 </div>
             </div>
@@ -73,16 +83,29 @@ const IBFightOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
     // actionSent
     // actionResp
     else if(data.step === Consts.fightSteps.ACT) {
+
+        const result = GetRoundResult(data.roundWinner);
+        let resultHighlightClass = "";
+        let resultMsg = "Oof...";
+        if(result === Consts.fightOutcome.WIN) {
+            resultHighlightClass = "textShadowGreen";
+            resultMsg = "Nice!";
+        }
+        else if(result === Consts.fightOutcome.LOSE) {
+            resultHighlightClass = "textShadowRed";
+            resultMsg = "Ouch!";
+        }
+
         return (
             <div className="d-flex justify-content-center mt-2">
-                <div className="messageBox fullW bgLightBlue fromAdmin">
+                <div className="width80Pct">
                     <div className="d-flex justify-content-between align-items-center mt-1">
                         {/* In this case, "self", the person who sent the message, is the action Responder */}
                         <div className="bg-warning mr-3">
                             <img src={GetImage(data[fromSelf ? "actionSent" : "actionResp"])} alt="action" className="m-1" />
                         </div>
-                        <div className="mr-3 text-white">
-                            {GetRoundResultMessage(data.roundWinner)}
+                        <div className={`mr-3 font-weight-bold text-white ${resultHighlightClass}`}>
+                            {resultMsg}
                         </div>
                         <div className="bg-warning">
                             <img src={GetImage(data[fromSelf ? "actionResp" : "actionSent"])} alt="action" className="m-1" />
@@ -95,11 +118,21 @@ const IBFightOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
     // fightWinner
     // msgEnd will be either: msgWin or msgLose or msgTie, as setup by sender
     else if(data.step === Consts.fightSteps.END) {
+
+        // The user responding to the fighting initaited this message to be sent, but it was the other user who msgEnd belongs to, hence the reverse classes being used.
+        let msgOriginRef = ``;
+        if(fromSelf) {
+            msgOriginRef = `fromAdminOfOther`;
+        }
+        else {
+            msgOriginRef = `fromAdminOfSelf`;
+        }
+
         return (
-            <div className="d-flex justify-content-center mt-2">
-                <div className="messageBox bgLightBlue text-center fromAdmin">
-                    <div className="messageText text-white">{GetFightResultMessage(data.fightWinner)}</div>
-                    <div className="messageText text-white">"{ReactEmoji.emojify(data.msgEnd)}"</div>
+            <div className="d-flex justify-content-center mt-2 mb-3">
+                <div className="outerBox text-center">
+                    <div className="messageText text-white fontSize90">{GetFightResultMessage(data.fightWinner)}</div>
+                    <div className={`messageText messageBox mt-2 ${msgOriginRef}`}>{ReactEmoji.emojify(data.msgEnd)}</div>
                 </div>
             </div>
         );
