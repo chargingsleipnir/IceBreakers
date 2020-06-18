@@ -9,6 +9,7 @@ import Message from './Message';
 import IceBreakerSelection from './IceBreakerSelection';
 import IBFightEngage from './IceBreakers/Fight/Engage';
 import IBTrapEngage from './IceBreakers/Trap/Engage';
+import IBBlankEngage from './IceBreakers/Blank/Engage';
 
 class Chat extends Component {
 
@@ -107,6 +108,14 @@ class Chat extends Component {
                     />;
                 else if(evt.type === Consts.msgTypes.CE_TRAP)
                     chatEvent = <IBTrapEngage 
+                        eventData={evt} 
+                        SendMessage={this.props.SendMessage} 
+                        UpdateEventData={this.props.UpdateEventData} 
+                        ClearEvent={this.props.ClearEvent} 
+                        chatPtnrName={this.props.user_Chat.name} 
+                    />;
+                else if(evt.type === Consts.msgTypes.CE_BLANK)
+                    chatEvent = <IBBlankEngage 
                         eventData={evt} 
                         SendMessage={this.props.SendMessage} 
                         UpdateEventData={this.props.UpdateEventData} 

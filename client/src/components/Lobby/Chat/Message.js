@@ -3,6 +3,7 @@ import ReactEmoji from 'react-emoji';
 import * as Consts from '../../../Consts';
 import IBFightOutcome from './IceBreakers/Fight/Outcome';
 import IBTrapOutcome from './IceBreakers/Trap/Outcome';
+import IBBlankOutcome from './IceBreakers/Blank/Outcome';
 
 const Message = ({ message, chatPtnrName }) => {
 
@@ -31,8 +32,10 @@ const Message = ({ message, chatPtnrName }) => {
         return( <IBFightOutcome message={message} chatPtnrName={chatPtnrName} /> );
     }
     else if(message.type === Consts.msgTypes.CE_TRAP) {
-        //console.log(`Message created. From self: ${fromSelf}, provocation text: "${data.msgProvoke}"`);
         return( <IBTrapOutcome message={message} chatPtnrName={chatPtnrName} /> );
+    }
+    else if(message.type === Consts.msgTypes.CE_BLANK) {
+        return( <IBBlankOutcome message={message} chatPtnrName={chatPtnrName} /> );
     }
 }
 

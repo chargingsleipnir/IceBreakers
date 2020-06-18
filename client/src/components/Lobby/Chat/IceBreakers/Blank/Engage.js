@@ -1,131 +1,88 @@
 import React from 'react';
+import ReactEmoji from 'react-emoji';
 import * as Consts from '../../../../../Consts';
 
-import imgPunch from '../../../../../images/Punch_02_32x32.png';
-import imgTackle from '../../../../../images/Tackle_01_32x32.png';
-import imgKick from '../../../../../images/Kick_02_32x32.png';
+const IBBlankEngage = ({ eventData: { fromSelf, data }, SendMessage, UpdateEventData, ClearEvent, chatPtnrName}) => {
+    // data: { statements: [{}] }
 
-const IBFightEngage = ({ eventData: { fromSelf, data }, SendMessage, UpdateEventData, ClearEvent, chatPtnrName}) => {
-    // data: { step, msgProvoke, msgWin, msgLose, msgTie, actionsSent, actionsResp:[] }
+    var elem_fillInput = React.createRef();
 
-    const OnBtnFight = (event) => {
+    const OnBtnTry = (event) => {
         event.preventDefault();
 
         SendMessage({ 
-            type: Consts.msgTypes.CE_FIGHT,
-            data: { step: Consts.fightSteps.ACCEPT }              
+            type: Consts.msgTypes.CE_BLANK,
+            data: { step: Consts.blankSteps.ACCEPT }              
         }, false);
 
         setTimeout(() => {
-            UpdateEventData({ step: Consts.fightSteps.ACT });
+            UpdateEventData({ step: Consts.blankSteps.FILL });
         }, Consts.CE_MSG_DELAY);
     }
 
-    const OnBtnFlee = (event) => {
+    const OnBtnDeny = (event) => {
         event.preventDefault();
 
         SendMessage({ 
-            type: Consts.msgTypes.CE_FIGHT,
-            data: { step: Consts.fightSteps.CANCEL }              
+            type: Consts.msgTypes.CE_BLANK,
+            data: { step: Consts.blankSteps.REJECT }              
         }, false);
         ClearEvent();
     }
 
-    const AssessRoundWinner = (actionOfSender, actionOfReponder) => {
-        if(actionOfSender === Consts.fightRoundActions.PUNCH) {
-            if(actionOfReponder === Consts.fightRoundActions.PUNCH)
-                return Consts.fightWinner.TIE
-            else if(actionOfReponder === Consts.fightRoundActions.TACKLE)
-                return Consts.fightWinner.SENDER
-            else if(actionOfReponder === Consts.fightRoundActions.KICK)
-                return Consts.fightWinner.RESPONDER
-        }
-        else if(actionOfSender === Consts.fightRoundActions.TACKLE) {
-            if(actionOfReponder === Consts.fightRoundActions.PUNCH)
-                return Consts.fightWinner.RESPONDER
-            else if(actionOfReponder === Consts.fightRoundActions.TACKLE)
-                return Consts.fightWinner.TIE
-            else if(actionOfReponder === Consts.fightRoundActions.KICK)
-                return Consts.fightWinner.SENDER
-        }
-        else if(actionOfSender === Consts.fightRoundActions.KICK) {
-            if(actionOfReponder === Consts.fightRoundActions.PUNCH)
-                return Consts.fightWinner.SENDER
-            else if(actionOfReponder === Consts.fightRoundActions.TACKLE)
-                return Consts.fightWinner.RESPONDER
-            else if(actionOfReponder === Consts.fightRoundActions.KICK)
-                return Consts.fightWinner.TIE
-        }
-    }
-
-    const OnAct = (event, fightAction) => {
+    const OnFill = (event, blankIndex) => {
         event.preventDefault();
 
-        data.actionsResp.push(fightAction);
+        data.statements[blankIndex].blankGuess = elem_fillInput.value;
+        data.statements[blankIndex].guessMatch = elem_fillInput.value.toLowerCase().trim() === data.statements[blankIndex].asBlank.toLowerCase().trim();
 
-        const actionSent = data.actionsSent[data.actionsResp.length - 1];
-
-        // This regular step will parse the given win/loss/tie and declare a winner, displaying the correct message for each battler.
         SendMessage({ 
-            type: Consts.msgTypes.CE_FIGHT,
+            type: Consts.msgTypes.CE_BLANK,
             data: {
-                step: Consts.fightSteps.ACT,
-                roundWinner: AssessRoundWinner(actionSent, fightAction),
-                actionSent: actionSent,
-                actionResp: fightAction
-            }              
+                step: Consts.blankSteps.FILL,
+                preBlank: data.statements[blankIndex].preBlank,
+                asBlank: data.statements[blankIndex].asBlank,
+                postBlank: data.statements[blankIndex].postBlank,
+                blankGuess: data.statements[blankIndex].blankGuess,
+                guessMatch: data.statements[blankIndex].guessMatch
+            }
         }, false);
 
-        // Last action taken, fight over
-        if(data.actionsResp.length >= data.actionsSent.length) {
+        // TODO: Prompt for next blank fill-in, or end event if there are no more.
+
+        if(data.statements[data.statements.length - 1].blankGuess === "") {
+            // This is simply acting as recussion, bringing us here again.
+            setTimeout(() => {
+                UpdateEventData({ 
+                    step: Consts.blankSteps.FILL,
+                    statements: data.statements
+                });
+            }, Consts.CE_MSG_DELAY);
+        }
+        else {
             // The END step will parse the # of wins/losses/ties and declare a winner, displaying the correct message for each battler.
             setTimeout(() => {
 
-                // Read all results and declare and make some declaration of winner.
-                var senderWins = 0;
-                var responderWins = 0;
-
-                for(let i = 0; i < data.actionsSent.length; i++) {
-                    const roundWinner = AssessRoundWinner(data.actionsSent[i], data.actionsResp[i]);
-                    if(roundWinner === Consts.fightWinner.SENDER)
-                        senderWins++;
-                    else if(roundWinner === Consts.fightWinner.RESPONDER)
-                        responderWins++;
-                }
-
-                // Messages were setup by Sender
-                var fightWinner = Consts.fightWinner.TIE;
-                var msgEnd = data.msgTie;
-                if(senderWins > responderWins) {
-                    fightWinner = Consts.fightWinner.SENDER;
-                    msgEnd = data.msgWin;
-                }
-                else if(senderWins < responderWins) {
-                    fightWinner = Consts.fightWinner.RESPONDER;
-                    msgEnd = data.msgLose;
+                let matchcount = 0;
+                for(let i = 0; i < data.statements.length; i++) {
+                    if(data.statements[i].guessMatch)
+                        matchcount++;
                 }
 
                 ClearEvent();
                 SendMessage({ 
-                    type: Consts.msgTypes.CE_FIGHT,
+                    type: Consts.msgTypes.CE_BLANK,
                     data: { 
-                        step: Consts.fightSteps.END,
-                        fightWinner,
-                        msgEnd
+                        step: Consts.blankSteps.END,
+                        statementCount: data.statements.length,
+                        matchcount
                     }
                 }, false);
             }, Consts.CE_MSG_DELAY);
         }
-        // Fight continuing
-        else {
-            // This is simply acting as recussion, bringing us here again.
-            setTimeout(() => {
-                UpdateEventData({ step: Consts.fightSteps.ACT });
-            }, Consts.CE_MSG_DELAY);
-        }            
     }
 
-    if(data.step === Consts.fightSteps.INIT) {
+    if(data.step === Consts.blankSteps.INIT) {
         return (
            fromSelf ? (
                 <div className="d-flex justify-content-center mt-2">
@@ -136,46 +93,64 @@ const IBFightEngage = ({ eventData: { fromSelf, data }, SendMessage, UpdateEvent
             ) : (
                 <div className="d-flex justify-content-center mt-2">
                     <div className="messageBox bgLightBlue fromAdmin">
-                        <div className="messageText text-center text-white">Your response?</div>
+                        <div className="messageText text-center text-white">Give it a try?</div>
                         <div className="d-flex justify-content-around mt-1 p-2">
-                            <button className="btn bg-warning mr-3" onClick={OnBtnFight}>Fight</button>
-                            <button className="btn bg-danger text-white" onClick={OnBtnFlee}>Flee</button>
+                            <button className="btn bg-warning mr-3" onClick={OnBtnTry}>Try</button>
+                            <button className="btn bg-danger text-white" onClick={OnBtnDeny}>Deny</button>
                         </div>
                     </div>
                 </div>
             )
         );
     }
-    else if(data.step === Consts.fightSteps.ACT) {
-        return (
-           fromSelf ? (
+    else if(data.step === Consts.blankSteps.FILL) {
+
+        // TODO: Utilize revealAllAtOnce option
+
+        var blankIndex = -1;
+        for(let i = 0; i < data.statements.length; i++) {
+            if(data.statements[i].blankGuess === "") {
+                blankIndex = i;
+                break;
+            }
+        }
+
+        if(fromSelf) {
+            return (
+                <div>
+                    <div className="d-flex justify-content-center mt-2">
+                        <div className="messageBox bgLightBlue fromAdmin">
+                            <div className="messageText text-center text-white">Fill in the blank:</div>
+                            <div className="messageText text-center bg-white p-1 mt-2 mb-2">
+                                <span>{ReactEmoji.emojify(data.statements[blankIndex].preBlank)}</span>
+                                <input type="text" ref={input => elem_fillInput = input} className="bg-transparent text-danger inlineInput" maxLength={data.statements[blankIndex].asBlank.length} size={data.statements[blankIndex].asBlank.length} />
+                                <span>{ReactEmoji.emojify(data.statements[blankIndex].postBlank)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="d-flex justify-content-around mt-1 p-2">
+                        <button className="btn bg-warning font-weight-bold" onClick={event => OnFill(event, blankIndex)}>Submit</button>
+                    </div>
+                </div>
+            );        
+        }
+        else {
+            return (
                 <div className="d-flex justify-content-center mt-2">
                     <div className="messageBox bgLightBlue fromAdmin">
-                        <div className="messageText text-center text-white">Select a move:</div>
-                        <div className="d-flex justify-content-around mt-1 p-2">
-                            <button className="btn bg-warning mr-3" onClick={event => OnAct(event, Consts.fightRoundActions.PUNCH)}>
-                                <img src={imgPunch} alt="punch" className="m-1" />
-                            </button>
-                            <button className="btn bg-warning mr-3" onClick={event => OnAct(event, Consts.fightRoundActions.TACKLE)}>
-                                <img src={imgTackle} alt="tackle" className="m-1" />
-                            </button>
-                            <button className="btn bg-warning" onClick={event => OnAct(event, Consts.fightRoundActions.KICK)}>
-                                <img src={imgKick} alt="kick" className="m-1" />
-                            </button>
+                        <div className="messageText text-center text-white">{chatPtnrName} is filling in the blank of:</div>
+                        <div className="messageText text-center bgLightGreen p-1 mt-2 mb-2">
+                            <span>{ReactEmoji.emojify(data.statements[blankIndex].preBlank)}</span>
+                            <u className="text-danger">{ReactEmoji.emojify(data.statements[blankIndex].asBlank)}</u>
+                            <span>{ReactEmoji.emojify(data.statements[blankIndex].postBlank)}</span>
                         </div>
                     </div>
                 </div>
-            ) : (
-                <div className="d-flex justify-content-center mt-2">
-                    <div className="messageBox bgLightBlue fromAdmin">
-                        <div className="messageText text-center text-white">{chatPtnrName} is selecting a move...</div>
-                    </div>
-                </div>
-            )
-        );
+            );
+        }
     }
     else return "";
 };
 
 
-export default IBFightEngage;
+export default IBBlankEngage;

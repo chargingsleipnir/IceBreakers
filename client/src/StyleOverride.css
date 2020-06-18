@@ -137,6 +137,14 @@ html, body, #root {
     background-color: #36ff8a;
 }
 
+.textYellow {
+    color: yellow;
+}
+
+.textGreenYellow {
+    color: greenyellow;
+}
+
 .FullSpreadAbsElem, .reimplementScroll {
     position: absolute !important;
     top: 0;
@@ -202,6 +210,12 @@ small {
     flex-flow: row wrap;
     justify-content: center;
     align-items: center;
+}
+
+.inlineInput {
+    border: none;
+    border-bottom: 2px solid #dc3545;
+    text-align: center;
 }
 
 .colourFlash {

@@ -2,65 +2,33 @@ import React from 'react';
 import ReactEmoji from 'react-emoji';
 import * as Consts from '../../../../../Consts';
 
-import imgPunch from '../../../../../images/Punch_02_32x32.png';
-import imgTackle from '../../../../../images/Tackle_01_32x32.png';
-import imgKick from '../../../../../images/Kick_02_32x32.png';
+const IBBlankOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
 
-const IBFightOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
 
-    const GetImage = (action) => {
-        if(action === Consts.fightRoundActions.PUNCH)
-            return imgPunch;
-        else if(action === Consts.fightRoundActions.TACKLE)
-            return imgTackle;
-        else if(action === Consts.fightRoundActions.KICK)
-            return imgKick;
-    }
+    if(data.step === Consts.blankSteps.INIT) {
 
-    // "Self" - the person who sent these messages, is the fight responder
-    const GetRoundResultMessage = (roundWinner) => {
-        if(roundWinner === Consts.fightWinner.SENDER)
-            return fromSelf ? "Ouch!" : "Nice!";
-        else if(roundWinner === Consts.fightWinner.RESPONDER)
-            return fromSelf ? "Nice!" : "Ouch!";
-        else if(roundWinner === Consts.fightWinner.TIE)
-            return "Oof...";
-    }
-
-    // "Self" - the person who sent these messages, is the fight responder
-    const GetFightResultMessage = (fightWinner) => {
-        if(fightWinner === Consts.fightWinner.SENDER)
-            return fromSelf ? `${chatPtnrName} won!` : `You beat ${chatPtnrName}!`;
-        else if(fightWinner === Consts.fightWinner.RESPONDER)
-            return fromSelf ? `You beat ${chatPtnrName}!` : `${chatPtnrName} won!`;
-        else if(fightWinner === Consts.fightWinner.TIE)
-            return "We have a tie!";
-    }
-
-    if(data.step === Consts.fightSteps.INIT) {
-
-        const msg = fromSelf ? `You challenged ${chatPtnrName} to a fight!` : `${chatPtnrName} challenged you to a fight!`;
+        const msg = fromSelf ? `You invited ${chatPtnrName} to read your mind!` : `${chatPtnrName} invited you to test your ESP!`;
         return (
             <div className="d-flex justify-content-center mt-2">
                 <div className="messageBox bgLightBlue text-center fromAdmin">
                     <div className="messageText text-white">{msg}</div>
-                    <div className="messageText text-white">"{ReactEmoji.emojify(data.msgProvoke)}"</div>
                 </div>
             </div>
         );
     }
-    else if(data.step === Consts.fightSteps.ACCEPT) {
+    else if(data.step === Consts.blankSteps.ACCEPT) {
+
         return (
             <div className="d-flex justify-content-center mt-2">
                 <div className="messageBox bgLightBlue text-center fromAdmin">
-                    <div className="messageText text-white">Challenge accepted!</div>
+                    <div className="messageText text-white">Invitation accepted!</div>
                 </div>
             </div>
-        );
+        );     
     }
-    else if(data.step === Consts.fightSteps.CANCEL) {
+    else if(data.step === Consts.blankSteps.REJECT) {
 
-        const msg = fromSelf ? `You wimped out.` : `${chatPtnrName} wimped out.`;
+        const msg = fromSelf ? `You're antenna's not working right now.` : `${chatPtnrName} isn't feeling too perceptive right now.`;
         return (
             <div className="d-flex justify-content-center mt-2">
                 <div className="messageBox bgLightBlue text-center fromAdmin">
@@ -69,37 +37,41 @@ const IBFightOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
             </div>
         );
     }
-    // roundWinner
-    // actionSent
-    // actionResp
-    else if(data.step === Consts.fightSteps.ACT) {
+
+    // data. preBlank, asBlank, postBlank, blankGuess
+    else if(data.step === Consts.blankSteps.FILL) {
+
+        const msgBlankFilled = 
+        <div className={`messageText text-center ${fromSelf ? "bg-white" : "bgLightGreen"} pt-1 pb-1 pl-2 pr-2 mt-1`}>
+            <span>{ReactEmoji.emojify(data.preBlank)}</span>
+            <u className="text-danger">{ReactEmoji.emojify(data.asBlank)}</u>
+            <span>{ReactEmoji.emojify(data.postBlank)}</span>
+        </div>
+
+        const msgBlankGuessed = 
+        <div className={`messageText text-center ${fromSelf ? "bgLightGreen" : "bg-white"} pt-1 pb-1 pl-2 pr-2 mt-1 mb-2`}>
+            <span>{ReactEmoji.emojify(data.preBlank)}</span>
+            <u className="text-danger">{ReactEmoji.emojify(data.blankGuess)}</u>
+            <span>{ReactEmoji.emojify(data.postBlank)}</span>
+        </div>
+
         return (
             <div className="d-flex justify-content-center mt-2">
-                <div className="messageBox fullW bgLightBlue fromAdmin">
-                    <div className="d-flex justify-content-between align-items-center mt-1">
-                        {/* In this case, "self", the person who sent the message, is the action Responder */}
-                        <div className="bg-warning mr-3">
-                            <img src={GetImage(data[fromSelf ? "actionSent" : "actionResp"])} alt="action" className="m-1" />
-                        </div>
-                        <div className="mr-3 text-white">
-                            {GetRoundResultMessage(data.roundWinner)}
-                        </div>
-                        <div className="bg-warning">
-                            <img src={GetImage(data[fromSelf ? "actionResp" : "actionSent"])} alt="action" className="m-1" />
-                        </div>
-                    </div>
+                <div className="messageBox fullW bgLightBlue fromAdmin"> {/*// TODO: Add "fullW" ? */}
+                    <div className="small text-light">{data.guessMatch ? "Match!" : "No match"}</div>
+                    {msgBlankFilled}
+                    {msgBlankGuessed}
                 </div>
             </div>
         );
     }
-    // fightWinner
-    // msgEnd will be either: msgWin or msgLose or msgTie, as setup by sender
-    else if(data.step === Consts.fightSteps.END) {
+
+    // data. statementCount, matchcount
+    else if(data.step === Consts.blankSteps.END) {
         return (
             <div className="d-flex justify-content-center mt-2">
-                <div className="messageBox bgLightBlue text-center fromAdmin">
-                    <div className="messageText text-white">{GetFightResultMessage(data.fightWinner)}</div>
-                    <div className="messageText text-white">"{ReactEmoji.emojify(data.msgEnd)}"</div>
+                <div className="messageBox bgLightBlue text-light text-center fromAdmin small">
+                    Matches: {data.matchcount} of {data.statementCount}
                 </div>
             </div>
         );
@@ -107,4 +79,4 @@ const IBFightOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
     else return "";
 };
 
-export default IBFightOutcome;
+export default IBBlankOutcome;

@@ -74,6 +74,8 @@ const IBTrapOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
     trapSuccess: btnPresses >= Consts.TRAP_STRUGGLE_COUNT,
     msgEnd
     */
+
+    // TODO: The sender should be left with the option to send the image at the end, regardless of whether or not the trap succeeded, just to ensure that the time spent doesn't have to go to waste.
     else if(data.step === Consts.trapSteps.END) {
         return (
             <div>
