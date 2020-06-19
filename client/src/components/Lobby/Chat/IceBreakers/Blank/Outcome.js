@@ -41,37 +41,69 @@ const IBBlankOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
     // data. preBlank, asBlank, postBlank, blankGuess
     else if(data.step === Consts.blankSteps.FILL) {
 
-        const msgBlankFilled = 
-        <div className={`messageText messageBox text-center ${fromSelf ? "fromAdminOfOther" : "fromAdminOfSelf"} mt-1`}>
-            <span>{ReactEmoji.emojify(data.preBlank)}</span>
-            <u className="text-danger">{ReactEmoji.emojify(data.asBlank)}</u>
-            <span>{ReactEmoji.emojify(data.postBlank)}</span>
-        </div>
+        var blankFilledArr = [];
+        var blankGuessedArr = [];
 
-        const msgBlankGuessed = 
-        <div className={`messageText messageBox text-center ${fromSelf ? "fromAdminOfSelf" : "fromAdminOfOther"} mt-1 mb-2`}>
-            <span>{ReactEmoji.emojify(data.preBlank)}</span>
-            <u className="text-danger">{ReactEmoji.emojify(data.blankGuess)}</u>
-            <span>{ReactEmoji.emojify(data.postBlank)}</span>
-        </div>
+        if(data.revealAllAtOnce) {
+            for(let i = 0; i < data.statements.length; i++) {
+                blankFilledArr.push( 
+                    <span key={i}>
+                        <span>{ReactEmoji.emojify(data.statements[i].preBlank)}</span>
+                        <u className="text-danger">{ReactEmoji.emojify(data.statements[i].asBlank)}</u>
+                        <span>{ReactEmoji.emojify(data.statements[i].postBlank)}</span>
+                        &nbsp;
+                    </span>
+                )
+
+                blankGuessedArr.push( 
+                    <span key={i}>
+                        <span>{ReactEmoji.emojify(data.statements[i].preBlank)}</span>
+                        <u className="text-danger">{ReactEmoji.emojify(data.statements[i].blankGuess)}</u>
+                        <span>{ReactEmoji.emojify(data.statements[i].postBlank)}</span>
+                        &nbsp;
+                    </span>
+                )
+            }
+        }
+        else {
+            blankFilledArr.push( 
+                <span key="0">
+                    <span>{ReactEmoji.emojify(data.preBlank)}</span>
+                    <u className="text-danger">{ReactEmoji.emojify(data.asBlank)}</u>
+                    <span>{ReactEmoji.emojify(data.postBlank)}</span>
+                </span>
+            )
+            blankGuessedArr.push( 
+                <span key="0">
+                    <span>{ReactEmoji.emojify(data.preBlank)}</span>
+                    <u className="text-danger">{ReactEmoji.emojify(data.blankGuess)}</u>
+                    <span>{ReactEmoji.emojify(data.postBlank)}</span>
+                    &nbsp;
+                </span>
+            )
+        }
 
         return (
             <div className="d-flex justify-content-center mt-2">
                 <div className="outerBox width80Pct">
                     <div className="small text-light">{data.guessMatch ? "Match!" : "No match"}</div>
-                    {msgBlankFilled}
-                    {msgBlankGuessed}
+                    <div className={`messageText messageBox text-center ${fromSelf ? "fromAdminOfOther" : "fromAdminOfSelf"} mt-1`}>
+                        {blankFilledArr}
+                    </div>
+                    <div className={`messageText messageBox text-center ${fromSelf ? "fromAdminOfSelf" : "fromAdminOfOther"} mt-1 mb-2`}>
+                        {blankGuessedArr}
+                    </div>
                 </div>
             </div>
         );
     }
 
-    // data. statementCount, matchcount
+    // data. statementCount, matchCount
     else if(data.step === Consts.blankSteps.END) {
         return (
             <div className="d-flex justify-content-center mt-2 mb-3">
                 <div className="outerBox text-light text-center">
-                    Matches: {data.matchcount} of {data.statementCount}
+                    Matches: {data.matchCount} of {data.statementCount}
                 </div>
             </div>
         );

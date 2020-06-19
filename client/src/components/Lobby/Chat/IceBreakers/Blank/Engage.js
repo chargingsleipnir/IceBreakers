@@ -33,52 +33,88 @@ const IBBlankEngage = ({ eventData: { fromSelf, data }, SendMessage, UpdateEvent
     const OnFill = (event, blankIndex) => {
         event.preventDefault();
 
-        data.statements[blankIndex].blankGuess = elem_fillInput.value;
-        data.statements[blankIndex].guessMatch = elem_fillInput.value.toLowerCase().trim() === data.statements[blankIndex].asBlank.toLowerCase().trim();
+        // TODO
+        if(data.revealAllAtOnce) {
+            var inputElems = document.getElementsByClassName("blankInputElem");
 
-        SendMessage({ 
-            type: Consts.msgTypes.CE_BLANK,
-            data: {
-                step: Consts.blankSteps.FILL,
-                preBlank: data.statements[blankIndex].preBlank,
-                asBlank: data.statements[blankIndex].asBlank,
-                postBlank: data.statements[blankIndex].postBlank,
-                blankGuess: data.statements[blankIndex].blankGuess,
-                guessMatch: data.statements[blankIndex].guessMatch
-            }
-        }, false);
+            var matchCount = 0;
+            for(let i = 0; i < data.statements.length; i++) {
+                data.statements[i].blankGuess = inputElems[i].value;
+                data.statements[i].guessMatch = inputElems[i].value.toLowerCase().trim() === data.statements[i].asBlank.toLowerCase().trim();
 
-        // TODO: Prompt for next blank fill-in, or end event if there are no more.
-
-        if(data.statements[data.statements.length - 1].blankGuess === "") {
-            // This is simply acting as recussion, bringing us here again.
-            setTimeout(() => {
-                UpdateEventData({ 
-                    step: Consts.blankSteps.FILL,
-                    statements: data.statements
-                });
-            }, Consts.CE_MSG_DELAY);
-        }
-        else {
-            // The END step will parse the # of wins/losses/ties and declare a winner, displaying the correct message for each battler.
-            setTimeout(() => {
-
-                let matchcount = 0;
-                for(let i = 0; i < data.statements.length; i++) {
-                    if(data.statements[i].guessMatch)
-                        matchcount++;
+                if(data.statements[i].guessMatch) {
+                    matchCount++;
                 }
+            }
 
+            SendMessage({ 
+                type: Consts.msgTypes.CE_BLANK,
+                data: {
+                    step: Consts.blankSteps.FILL,
+                    statements: data.statements,
+                    revealAllAtOnce: data.revealAllAtOnce
+                }
+            }, false);
+
+            setTimeout(() => {
                 ClearEvent();
                 SendMessage({ 
                     type: Consts.msgTypes.CE_BLANK,
                     data: { 
                         step: Consts.blankSteps.END,
                         statementCount: data.statements.length,
-                        matchcount
+                        matchCount
                     }
                 }, false);
             }, Consts.CE_MSG_DELAY);
+        }
+        else {
+            data.statements[blankIndex].blankGuess = elem_fillInput.value;
+            data.statements[blankIndex].guessMatch = elem_fillInput.value.toLowerCase().trim() === data.statements[blankIndex].asBlank.toLowerCase().trim();
+
+            SendMessage({ 
+                type: Consts.msgTypes.CE_BLANK,
+                data: {
+                    step: Consts.blankSteps.FILL,
+                    preBlank: data.statements[blankIndex].preBlank,
+                    asBlank: data.statements[blankIndex].asBlank,
+                    postBlank: data.statements[blankIndex].postBlank,
+                    blankGuess: data.statements[blankIndex].blankGuess,
+                    guessMatch: data.statements[blankIndex].guessMatch
+                }
+            }, false);
+
+            // TODO: Prompt for next blank fill-in, or end event if there are no more.
+            if(data.statements[data.statements.length - 1].blankGuess === "") {
+                // This is simply acting as recussion, bringing us here again.
+                setTimeout(() => {
+                    UpdateEventData({ 
+                        step: Consts.blankSteps.FILL,
+                        statements: data.statements
+                    });
+                }, Consts.CE_MSG_DELAY);
+            }
+            else {
+                // The END step will parse the # of wins/losses/ties and declare a winner, displaying the correct message for each battler.
+                setTimeout(() => {
+
+                    let matchCount = 0;
+                    for(let i = 0; i < data.statements.length; i++) {
+                        if(data.statements[i].guessMatch)
+                            matchCount++;
+                    }
+
+                    ClearEvent();
+                    SendMessage({ 
+                        type: Consts.msgTypes.CE_BLANK,
+                        data: { 
+                            step: Consts.blankSteps.END,
+                            statementCount: data.statements.length,
+                            matchCount
+                        }
+                    }, false);
+                }, Consts.CE_MSG_DELAY);
+            }
         }
     }
 
@@ -105,14 +141,47 @@ const IBBlankEngage = ({ eventData: { fromSelf, data }, SendMessage, UpdateEvent
     }
     else if(data.step === Consts.blankSteps.FILL) {
 
-        // TODO: Utilize revealAllAtOnce option
-
+        var jsxArr = [];
         var blankIndex = -1;
-        for(let i = 0; i < data.statements.length; i++) {
-            if(data.statements[i].blankGuess === "") {
-                blankIndex = i;
-                break;
+
+        // In this case, loop through all statements and add them together into a single paragraph, meaning the inputs also need to all be managed at once.
+        if(data.revealAllAtOnce) {
+
+            for(let i = 0; i < data.statements.length; i++) {
+                jsxArr.push( 
+                    <span key={i}>
+                        <span>{ReactEmoji.emojify(data.statements[i].preBlank)}</span>
+                        {
+                            fromSelf ? 
+                            <input type="text" className="bg-transparent text-danger inlineInput blankInputElem" size={data.statements[i].asBlank.length} /> : 
+                            <u className="text-danger">{ReactEmoji.emojify(data.statements[i].asBlank)}</u>
+                        }
+                        <span>{ReactEmoji.emojify(data.statements[i].postBlank)}</span>
+                        &nbsp;
+                    </span>
+                )
             }
+        }
+        // Otherwise, find the next statement that has not yet been guessed at, and present it alone.
+        else {
+            for(let i = 0; i < data.statements.length; i++) {
+                if(data.statements[i].blankGuess === "") {
+                    blankIndex = i;
+                    break;
+                }
+            }
+
+            jsxArr.push( 
+                <span key={blankIndex}>
+                    <span>{ReactEmoji.emojify(data.statements[blankIndex].preBlank)}</span>
+                    {
+                        fromSelf ? 
+                        <input type="text" ref={input => elem_fillInput = input} className="bg-transparent text-danger inlineInput" size={data.statements[blankIndex].asBlank.length} /> : 
+                        <u className="text-danger">{ReactEmoji.emojify(data.statements[blankIndex].asBlank)}</u>
+                    }
+                    <span>{ReactEmoji.emojify(data.statements[blankIndex].postBlank)}</span>
+                </span>
+            )
         }
 
         if(fromSelf) {
@@ -122,9 +191,7 @@ const IBBlankEngage = ({ eventData: { fromSelf, data }, SendMessage, UpdateEvent
                         <div className="outerBox">
                             <div className="messageText text-center text-white">Fill in the blank:</div>
                             <div className="messageText text-center messageBox fromAdminOfOther mt-2 mb-2">
-                                <span>{ReactEmoji.emojify(data.statements[blankIndex].preBlank)}</span>
-                                <input type="text" ref={input => elem_fillInput = input} className="bg-transparent text-danger inlineInput" size={data.statements[blankIndex].asBlank.length} />
-                                <span>{ReactEmoji.emojify(data.statements[blankIndex].postBlank)}</span>
+                                { jsxArr }
                             </div>
                         </div>
                     </div>
@@ -140,9 +207,7 @@ const IBBlankEngage = ({ eventData: { fromSelf, data }, SendMessage, UpdateEvent
                     <div className="outerBox">
                         <div className="messageText text-center text-white">{chatPtnrName} is filling in the blank of:</div>
                         <div className="messageText text-center messageBox fromAdminOfSelf mt-2 mb-2">
-                            <span>{ReactEmoji.emojify(data.statements[blankIndex].preBlank)}</span>
-                            <u className="text-danger">{ReactEmoji.emojify(data.statements[blankIndex].asBlank)}</u>
-                            <span>{ReactEmoji.emojify(data.statements[blankIndex].postBlank)}</span>
+                            { jsxArr }
                         </div>
                     </div>
                 </div>
