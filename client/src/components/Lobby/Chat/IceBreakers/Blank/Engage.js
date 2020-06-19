@@ -92,9 +92,9 @@ const IBBlankEngage = ({ eventData: { fromSelf, data }, SendMessage, UpdateEvent
                 </div>
             ) : (
                 <div className="d-flex justify-content-center mt-2">
-                    <div className="outerBox messageBox bgLightBlue fromAdmin">
+                    <div className="outerBox">
                         <div className="messageText text-center text-white">Give it a try?</div>
-                        <div className="d-flex justify-content-around mt-1 p-2">
+                        <div className="d-flex justify-content-around bgLightBlue mt-2 p-2">
                             <button className="btn bg-warning mr-3" onClick={OnBtnTry}>Try</button>
                             <button className="btn bg-danger text-white" onClick={OnBtnDeny}>Deny</button>
                         </div>
@@ -119,11 +119,11 @@ const IBBlankEngage = ({ eventData: { fromSelf, data }, SendMessage, UpdateEvent
             return (
                 <div>
                     <div className="d-flex justify-content-center mt-2">
-                        <div className="messageBox bgLightBlue fromAdmin">
+                        <div className="outerBox">
                             <div className="messageText text-center text-white">Fill in the blank:</div>
-                            <div className="messageText text-center bg-white p-1 mt-2 mb-2">
+                            <div className="messageText text-center messageBox fromAdminOfOther mt-2 mb-2">
                                 <span>{ReactEmoji.emojify(data.statements[blankIndex].preBlank)}</span>
-                                <input type="text" ref={input => elem_fillInput = input} className="bg-transparent text-danger inlineInput" maxLength={data.statements[blankIndex].asBlank.length} size={data.statements[blankIndex].asBlank.length} />
+                                <input type="text" ref={input => elem_fillInput = input} className="bg-transparent text-danger inlineInput" size={data.statements[blankIndex].asBlank.length} />
                                 <span>{ReactEmoji.emojify(data.statements[blankIndex].postBlank)}</span>
                             </div>
                         </div>
@@ -137,9 +137,9 @@ const IBBlankEngage = ({ eventData: { fromSelf, data }, SendMessage, UpdateEvent
         else {
             return (
                 <div className="d-flex justify-content-center mt-2">
-                    <div className="messageBox bgLightBlue fromAdmin">
+                    <div className="outerBox">
                         <div className="messageText text-center text-white">{chatPtnrName} is filling in the blank of:</div>
-                        <div className="messageText text-center bgLightGreen p-1 mt-2 mb-2">
+                        <div className="messageText text-center messageBox fromAdminOfSelf mt-2 mb-2">
                             <span>{ReactEmoji.emojify(data.statements[blankIndex].preBlank)}</span>
                             <u className="text-danger">{ReactEmoji.emojify(data.statements[blankIndex].asBlank)}</u>
                             <span>{ReactEmoji.emojify(data.statements[blankIndex].postBlank)}</span>

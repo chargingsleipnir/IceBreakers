@@ -40,7 +40,7 @@ const IBTrapOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
         const msg = fromSelf ? `You sent ${chatPtnrName} ${ReactEmoji.emojify(data.giftText)}.` : `${chatPtnrName} sent you ${ReactEmoji.emojify(data.giftText)}.`;
         return (
             <div className="d-flex justify-content-center mt-2">
-                <div className="messageBox bgLightBlue text-center fromAdmin">
+                <div className="outerBox fontSize90 text-center">
                     <div className="messageText text-white">{msg}</div>
                 </div>
             </div>
@@ -48,9 +48,9 @@ const IBTrapOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
     }
     else if(data.step === Consts.trapSteps.ACCEPT) {
         return (
-            <div>
+            <div className="mb-3">
                 <div className="d-flex justify-content-center mt-2">
-                    <div className="messageBox bgLightBlue text-center fromAdmin">
+                    <div className="outerBox fontSize90 text-center">
                         <div className="messageText text-white">Gift accepted.</div>
                     </div>
                     
@@ -63,8 +63,8 @@ const IBTrapOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
 
         const msg = fromSelf ? `You turned it down.` : `It was turned away.`;
         return (
-            <div className="d-flex justify-content-center mt-2">
-                <div className="messageBox bgLightBlue text-center fromAdmin">
+            <div className="d-flex justify-content-center mt-2 mb-3">
+                <div className="outerBox fontSize90 text-center">
                     <div className="messageText text-white">{msg}</div>
                 </div>
             </div>
@@ -77,12 +77,21 @@ const IBTrapOutcome = ({ message: { fromSelf, data}, chatPtnrName }) => {
 
     // TODO: The sender should be left with the option to send the image at the end, regardless of whether or not the trap succeeded, just to ensure that the time spent doesn't have to go to waste.
     else if(data.step === Consts.trapSteps.END) {
+
+        let msgOriginRef = ``;
+        if(fromSelf) {
+            msgOriginRef = `fromAdminOfOther`;
+        }
+        else {
+            msgOriginRef = `fromAdminOfSelf`;
+        }
+
         return (
-            <div>
+            <div className="mb-3">
                 <div className="d-flex justify-content-center mt-2">
-                    <div className="messageBox bgLightBlue text-center fromAdmin">
-                        <div className="messageText text-white">{GetTrapResultMessage(data.trapSuccess)}</div>
-                        <div className="messageText text-white">"{ReactEmoji.emojify(data.msgEnd)}"</div>
+                    <div className="outerBox text-center">
+                        <div className="messageText fontSize90 text-white">{GetTrapResultMessage(data.trapSuccess)}</div>
+                        <div className={`messageText messageBox mt-2 ${msgOriginRef}`}>"{ReactEmoji.emojify(data.msgEnd)}"</div>
                     </div>
                 </div>
                 {GetGiftCanvas(!data.trapSuccess)}
