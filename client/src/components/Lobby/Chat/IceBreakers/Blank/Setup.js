@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import ScrollToBottom from 'react-scroll-to-bottom';
 
 import PageTitleBar from '../../PageTitleBar';
 import * as Consts from '../../../../../Consts';
 
-import Template_SetupStatement from './template_SetupStatement';
+import TemplateSetupStatement from './template_SetupStatement';
 
 const IBBlankSetup = ({ ReturnToSelection, user_Chat_Active, LaunchChatEvent }) => {
 
@@ -65,7 +64,7 @@ const IBBlankSetup = ({ ReturnToSelection, user_Chat_Active, LaunchChatEvent }) 
 
     var html_setupStatements = [];
     for(let i = 0; i < statementCount; i++) {
-        html_setupStatements.push(<Template_SetupStatement />);
+        html_setupStatements.push(<TemplateSetupStatement />);
     }
 
     return (
