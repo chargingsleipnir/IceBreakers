@@ -48,6 +48,13 @@ io.on("connection", (socket) => {
             socket.emit('ImageReqSlice', { currentSlice: slice });
     });
 
+    socket.on('PreppingCE', ( data ) => {
+        io.to(data.chatPtnrID).emit('RecPreppingCE', {
+            chatPtnrID: socket.id,
+            isPreppingCE: data.isPreppingCE
+        });
+    });
+
     socket.on('SendMessage', ( data ) => {
         //console.log(`Message received at server: isEvent: ${data.isEvent}, msgType: ${data.msgData.type}.`);
 

@@ -13,6 +13,7 @@ class User {
         this.likeThem = false;
         this.likesMe = false;
         this.unreadMsg = false;
+        this.isPreppingCE = false;
         this.disableSend = false;
         this.messages = [];
         this.chatEvent = null;

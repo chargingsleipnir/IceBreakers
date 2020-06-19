@@ -18,7 +18,7 @@ class Chat extends Component {
         preppingChatEvent: false
     };
 
-    //props: {user_Chat, user_Chat_Active, SendMessage, ToPageUsers}
+    //props: {user_Chat, user_Chat_Active, PreppingCE, SendMessage, ToPageUsers}
     constructor(props) {
         super(props);
 
@@ -64,9 +64,11 @@ class Chat extends Component {
     ChooseIceBreaker (event) {
         event.preventDefault();
         this.setState({ preppingChatEvent: true });
+        this.props.PreppingCE(this.props.user_Chat.id, true);
     }
     ReturnToChat () {
         this.setState({ preppingChatEvent: false });
+        this.props.PreppingCE(this.props.user_Chat.id, false);
     }
 
     render() {
@@ -81,6 +83,7 @@ class Chat extends Component {
 
             // Disable chat with this user if they left ("account" gone), or I've sent an event to them, until they complete it.
             const disabled = !this.props.user_Chat_Active || this.props.user_Chat.disableSend;
+            const disableCE = this.props.user_Chat ? this.props.user_Chat.isPreppingCE : false;
 
             // TODO: Event will play out once an ice breaker is selected.
             //* Each Step (managed internally) will produce a resulting message, ideally the same message for both sender and Receiver
@@ -145,7 +148,7 @@ class Chat extends Component {
                     </div>
                     <div className="bg-secondary">
                         <form className="maxW1000 m-0Auto d-flex align-items-stretch p-2">
-                            <button className="btn noBorder bgLightBlue text-white mr-2" onClick={this.ChooseIceBreaker} disabled={disabled}>
+                            <button className="btn noBorder bgLightBlue text-white mr-2" onClick={this.ChooseIceBreaker} disabled={disabled || disableCE}>
                                 <i className="fas fa-handshake fa-lg"></i>
                             </button>
                             <input 

@@ -51,6 +51,22 @@ class PageSelection extends Component {
             this.setState({ users });
         });
 
+        props.socket.on("RecPreppingCE", (data) => {
+            this.setState((prevState) => {
+                let changeIndex = prevState.users.findIndex((user) => user.id === data.chatPtnrID);
+                prevState.users[changeIndex].isPreppingCE = data.isPreppingCE;
+                if(prevState.user_Chat) {
+                    if(prevState.user_Chat.id === data.chatPtnrID)
+                        prevState.user_Chat.isPreppingCE = data.isPreppingCE;
+                }
+
+                return { 
+                    users: prevState.users,
+                    user_Chat: prevState.user_Chat
+                }
+            });
+        });
+
         // TODO: Make only one call from the server, 'RecMessage'
         // That call sends the chatPtnrID, a type, and data.
         // The type is what kind of message (text, fight, trap, etc.)
@@ -123,6 +139,7 @@ class PageSelection extends Component {
         this.ToPageUsers = this.ToPageUsers.bind(this);
         this.LikeUserToggle = this.LikeUserToggle.bind(this);
         this.ToPageChat = this.ToPageChat.bind(this);
+        this.PreppingCE = this.PreppingCE.bind(this);
         this.SendMessage = this.SendMessage.bind(this);
         this.UpdateEventData = this.UpdateEventData.bind(this);
         this.ClearEvent = this.ClearEvent.bind(this);
@@ -149,6 +166,10 @@ class PageSelection extends Component {
             user_Chat, 
             page: Consts.pages.CHAT 
         }));
+    }
+
+    PreppingCE (chatPtnrID, isPreppingCE) {
+        this.props.socket.emit("PreppingCE", { chatPtnrID, isPreppingCE });
     }
 
     // Update my own message view, not required from server
@@ -239,6 +260,7 @@ class PageSelection extends Component {
             return (<Chat 
                 user_Chat={this.state.user_Chat}
                 user_Chat_Active={user_Chat_Active}
+                PreppingCE={this.PreppingCE}
                 SendMessage={this.SendMessage}
                 UpdateEventData={this.UpdateEventData}
                 ClearEvent={this.ClearEvent}
