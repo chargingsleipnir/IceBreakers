@@ -1,14 +1,20 @@
+$myLightGreen: #36ff8a;
+
+@mixin transition($prop) {
+    -webkit-transition: $prop;
+    -moz-transition: $prop;
+    -ms-transition: $prop;
+    -o-transition: $prop;
+    transition: $prop;
+}
+
 html, body, #root {
     height: 100%;
     overflow: hidden;
 }
 
 .progress-bar.transitionNone {
-    -webkit-transition: none;
-    -moz-transition: none;
-    -ms-transition: none;
-    -o-transition: none;
-    transition: none;
+    @include transition(none);
 }
 
 .notificationBadge {
@@ -36,6 +42,26 @@ html, body, #root {
     height: 50px;
     overflow: hidden;
     position: relative;
+
+    > img {
+        height: 100%;
+        width: auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        -moz-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        -o-transform: translate(-50%, -50%);
+        -webkit-transform: translate(-50%, -50%);
+    
+        image-orientation: from-image;
+
+        .portrait {
+            height: auto;
+            width: 100%;
+        }
+    }
 }
 #AvatarSelected {
     width: 70vw;
@@ -43,25 +69,6 @@ html, body, #root {
     max-width: 256px;
     max-height: 256px;
 }
-.avatarsUserIdent > img {
-    height: 100%;
-    width: auto;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    -moz-transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-    -o-transform: translate(-50%, -50%);
-    -webkit-transform: translate(-50%, -50%);
-
-    image-orientation: from-image;
-}
-.avatarsUserIdent > img.portrait {
-    height: auto;
-    width: 100%;
-}
-
 
 #ImageUploadBar {
     top: 0;
@@ -108,52 +115,56 @@ html, body, #root {
     max-width: 80%;
 }
 
+%fromAdmin {
+    padding: 5px 9px 7px;
+    border-radius: 0;
+    position: relative;
+}
+
+%fromAdminAfter {
+    content: " ";
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+}
+
 .messageBox {
     padding: 5px 12px 7px 12px;
+
+    &.fromSelf {
+        border-radius: 17px 10px 0 17px;
+    }
+    &.fromOther {
+        border-radius: 10px 17px 17px 0;
+    }
+
+    &.fromAdminOfSelf {
+        @extend %fromAdmin;
+        background-color: $myLightGreen;
+
+        &::after {
+            @extend %fromAdminAfter;
+            right: -10px;
+            border-right: none;
+            border-left: 10px solid $myLightGreen;
+        }
+    }
+    &.fromAdminOfOther {
+        @extend %fromAdmin;
+        background-color: white;
+
+        &::after {
+            @extend %fromAdminAfter;
+            left: -10px;
+            border-right: 10px solid white;
+            border-left: none;
+        }
+    }
 }
 .width80Pct {
     width: 80%;
-}
-.messageBox.fromSelf {
-    border-radius: 17px 10px 0 17px;
-}
-.messageBox.fromOther {
-    border-radius: 10px 17px 17px 0;
-}
-
-.messageBox.fromAdminOfSelf {
-    padding: 5px 9px 7px;
-    border-radius: 0;
-    position: relative;
-    background-color: #36ff8a;
-}
-.messageBox.fromAdminOfSelf::after {
-    content: " ";
-    position: absolute;
-    right: -10px;
-    top: 50%;
-    transform: translateY(-50%);
-    border-top: 10px solid transparent;
-    border-right: none;
-    border-left: 10px solid #36ff8a;
-    border-bottom: 10px solid transparent;
-}
-.messageBox.fromAdminOfOther {
-    padding: 5px 9px 7px;
-    border-radius: 0;
-    position: relative;
-    background-color: white;
-}
-.messageBox.fromAdminOfOther::after {
-    content: " ";
-    position: absolute;
-    left: -10px;
-    top: 50%;
-    transform: translateY(-50%);
-    border-top: 10px solid transparent;
-    border-right: 10px solid white;
-    border-left: none;
-    border-bottom: 10px solid transparent;
 }
 
 .fontSize90 {
@@ -172,7 +183,7 @@ html, body, #root {
 }
 
 .bgLightGreen {
-    background-color: #36ff8a;
+    background-color: $myLightGreen;
 }
 
 .textYellow {

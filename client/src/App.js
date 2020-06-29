@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import './StyleOverride.css';
+import './StyleOverride.scss';
 
 import Join from './components/Join';
 
